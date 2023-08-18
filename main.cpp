@@ -1,27 +1,18 @@
 #include "SFML/Graphics.hpp";
 #include <iostream>;
-#include <random>;
+#include "MyCircle.h";
 
-void changeColor(sf::CircleShape& c)
-{
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<int> dis(0, 255);
-    sf::Color randCol(dis(gen), dis(gen), dis(gen));
-    c.setFillColor(randCol);
-}
 
 int main()
 {
-    int width = 800;
-    int height = 600;    
-    sf::RenderWindow window(sf::VideoMode(width, height), "SCR", sf::Style::None);
-    sf::CircleShape circle(50.0f);
-    circle.setFillColor(sf::Color::Magenta);
-    circle.setOrigin(circle.getRadius(), circle.getRadius());
-    sf::Vector2f vel(0.01f, 0.01f);
-    sf::Vector2f position(window.getSize().x / 2, window.getSize().y / 2);
-    
+    sf::VideoMode res = sf::VideoMode::getDesktopMode();
+    int width = res.width;
+    int height = res.height;    
+    sf::ContextSettings settings;
+    settings.antialiasingLevel = 8;
+    sf::RenderWindow window(sf::VideoMode(width, height), "SCR", sf::Style::Fullscreen, settings);
+    std::vector<MyCircle*> circs;
+
     while (window.isOpen())
     {
         sf::Event event;
@@ -29,28 +20,81 @@ int main()
         {
             if (event.type == sf::Event::Closed) 
             {
-                window.close();
+                 window.close();
+            }
+            else if (event.type == sf::Event::KeyPressed) 
+            {
+                if (event.key.code == sf::Keyboard::Escape) 
+                {
+                    window.close();
+                }
+                else if (event.key.code == sf::Keyboard::Space)
+                {
+                    circs.push_back(new MyCircle());
+                }
+            }
+            if (event.type == sf::Event::MouseButtonPressed) 
+            {
+                if (event.mouseButton.button == sf::Mouse::Left) 
+                {
+                    sf::Vector2i mousePos = sf::Mouse::getPosition();
+                    float mouseX = (float)mousePos.x;
+                    float mouseY = (float)mousePos.y;
+                    sf::Vector2f mousePosF(mouseX, mouseY);
+                    if (circs.empty()) 
+                    {
+                        circs.push_back(new MyCircle(mousePosF));
+                    }
+                    else
+                    {
+                        bool block = false;
+                        for (auto& c : circs)
+                        {
+                            if (c->contains(mousePosF))
+                            {
+                                block = true;
+                            }
+                        }
+                        if (!block)
+                        {
+                           circs.push_back(new MyCircle(mousePosF));
+                        }
+                    }
+                }
+                if (event.mouseButton.button == sf::Mouse::Right) 
+                {
+                    sf::Vector2i mousePos = sf::Mouse::getPosition();
+                    float mouseX = (float)mousePos.x;
+                    float mouseY = (float)mousePos.y;
+                    sf::Vector2f mousePosF(mouseX, mouseY);
+
+                    for (auto& c : circs) 
+                    {
+                        if (c->contains(mousePosF)) 
+                        {
+                            circs.erase(std::remove(circs.begin(), circs.end(), c), circs.end());
+                        }
+                    }
+                }
             }
         }
-
-        position += vel;
-
-        if (position.x > window.getSize().x - circle.getRadius() || position.x < circle.getRadius())
-        {
-            std::cout << "x= " << position.x << "\n";
-            vel.x = -vel.x;
-            changeColor(circle);
-        }
-        if (position.y > window.getSize().y - circle.getRadius() || position.y < circle.getRadius())
-        {
-            std::cout << "y= " << position.y << "\n";
-            vel.y = -vel.y;
-            changeColor(circle);
-        }
-
-        circle.setPosition(position);
         window.clear();
-        window.draw(circle);
+        for (auto& c : circs) 
+        {
+            for (auto& _c : circs) 
+            {
+                if (_c != c) 
+                {
+                    if (_c->isIntersect((*c))) 
+                    { 
+                        c->calculateCollision(*_c);
+                    }
+                }
+            }
+
+            c->updateMovement();
+            window.draw(*c);
+        }
         window.display();
     }
     return 0;

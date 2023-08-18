@@ -1,28 +1,29 @@
-﻿  main.cpp
-D:\Visual Studio\Repos\RetroScreenSaver\main.cpp(1,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-D:\Visual Studio\Repos\RetroScreenSaver\main.cpp(2,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-D:\Visual Studio\Repos\RetroScreenSaver\main.cpp(3,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-D:\Visual Studio\Repos\RetroScreenSaver\main.cpp(23,70): warning C4244: 'argument': conversion from 'T' to 'T', possible loss of data
-          with
-          [
-              T=unsigned int
-          ]
-          and
-          [
-              T=float
-          ]
-D:\Visual Studio\Repos\RetroScreenSaver\main.cpp(23,46): warning C4244: 'argument': conversion from 'T' to 'T', possible loss of data
-          with
-          [
-              T=unsigned int
-          ]
-          and
-          [
-              T=float
-          ]
+﻿  Scanning sources for module dependencies...
+  MyCircle.h
+  Compiling...
+  MyCircle.h
+D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.h(1,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.h(2,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.h(3,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+  MyCircle.cpp
+D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.cpp(1,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.h(1,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.h(2,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.h(3,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.cpp(52,11): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.cpp(53,11): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.cpp(112,11): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.cpp(113,11): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  main.cpp
+D:\Visual Studio\Repos\RetroScreenSaver\main.cpp(1,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\main.cpp(2,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\main.cpp(3,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.h(1,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.h(2,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.h(3,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
   Generating code
-  22 of 36 functions (61.1%) were compiled, the rest were copied from previous compilation.
-    21 functions were new in current compilation
+  2 of 160 functions ( 1.2%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
     0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   RetroScreenSaver.vcxproj -> D:\Visual Studio\Repos\RetroScreenSaver\x64\Release\RetroScreenSaver.exe
