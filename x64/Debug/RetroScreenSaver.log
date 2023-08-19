@@ -1,1 +1,21 @@
-﻿  RetroScreenSaver.vcxproj -> D:\Visual Studio\Repos\RetroScreenSaver\x64\Debug\RetroScreenSaver.exe
+﻿  Scanning sources for module dependencies...
+  main.cpp
+D:\Visual Studio\Repos\RetroScreenSaver\main.cpp(1,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\main.cpp(2,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\main.cpp(3,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.h(1,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.h(2,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.h(3,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\main.cpp(15,52): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+D:\Visual Studio\Repos\RetroScreenSaver\main.cpp(15,40): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+D:\Visual Studio\Repos\RetroScreenSaver\main.cpp(27,43): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+D:\Visual Studio\Repos\RetroScreenSaver\main.cpp(27,31): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+  RetroScreenSaver.vcxproj -> D:\Visual Studio\Repos\RetroScreenSaver\x64\Debug\RetroScreenSaver.exe

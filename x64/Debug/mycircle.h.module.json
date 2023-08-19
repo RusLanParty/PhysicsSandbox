@@ -1,0 +1,22 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "x64\\Debug\\MyCircle.h.obj",
+            "outputs": [
+                "D:\\Visual Studio\\Repos\\RetroScreenSaver\\x64\\Debug\\vc143.pdb",
+                "x64\\Debug\\",
+                "D:\\Visual Studio\\Repos\\RetroScreenSaver\\x64\\Debug\\MyCircle.h.ifc"
+            ],
+            "provides": [
+                {
+                    "logical-name": "MyCircle.h",
+                    "source-path": "d:\\visual studio\\repos\\retroscreensaver\\mycircle.h",
+                    "lookup-method": "absolute"
+                }
+            ],
+            "requires": []
+        }
+    ]
+}
