@@ -1,7 +1,7 @@
 #include "MyCircle.h";
+#include "Global.h";
 
-
-MyCircle::MyCircle()
+MyCircle::MyCircle() 
 {
 	hue = 0.0f;
 	saturation = 1.0f;
@@ -60,11 +60,34 @@ void MyCircle::setSpeed(float xs, float ys)
 
 void MyCircle::invertXSpeed()
 {
-	this->_velocity.x *= -1.0f;
+	this->_velocity.x *= -0.7f;
 }
 void MyCircle::invertYSpeed()
 {
-	this->_velocity.y *= -1.0f;
+	this->_velocity.y *= -0.7f;
+}
+
+void MyCircle::decreaseSpeed()
+{
+	float dx = 0.0f;
+	float dy = 0.0f;
+	if (this->getSpeed().x > 0.0f) 
+	{
+		dx = 0.004f;
+	}
+	if (this->getSpeed().y > 0.0f)
+	{
+		dy = 0.004f;
+	}
+	if (this->getSpeed().x < 0.0f)
+	{
+		dx = -0.004f;
+	}
+	if (this->getSpeed().y < 0.0f)
+	{
+		dy = -0.004f;
+	}
+	this->setSpeed(this->getSpeed().x - dx, this->getSpeed().y - dy);
 }
 
 bool MyCircle::contains(sf::Vector2f& p) const
@@ -85,7 +108,7 @@ void MyCircle::randomizeColor()
 	std::mt19937 gen(rd());
 	std::uniform_int_distribution<int> dis(0, 360);
 	hue = dis(gen);
-	value = 0.0f;
+	value = 0.3f;
 	sf::Color randCol = HSVtoRGB(hue, saturation, value);
 	this->setFillColor(randCol);
 }
@@ -127,12 +150,18 @@ void MyCircle::updateMovement()
 	if (this->getPosition().x >= width - this->getRadius() || this->getPosition().x <= this->getRadius())
 	{
 		this->invertXSpeed();
-		this->randomizeColor();
+		if (!gravity) 
+		{
+			this->randomizeColor();
+		}
 	}
 	if (this->getPosition().y >= height - this->getRadius() || this->getPosition().y <= this->getRadius())
 	{
 		this->invertYSpeed();
-		this->randomizeColor();
+		if (!gravity) 
+		{
+			this->randomizeColor();
+		}
 	}
 	float newX = std::clamp(this->getPosition().x + _velocity.x, this->getRadius(), width - this->getRadius());
 	float newY = std::clamp(this->getPosition().y + _velocity.y, this->getRadius(), height - this->getRadius());
@@ -151,23 +180,27 @@ bool MyCircle::isIntersect(const MyCircle& c2) const
 	else { return false; }
 }
 
-void MyCircle::resolveIntersections(MyCircle& c2)
+void MyCircle::resolveIntersections(MyCircle& other)
 {
-	sf::Vector2f center1 = this->getPosition();
-	sf::Vector2f center2 = c2.getPosition();
+	sf::Vector2f delta = other.getPosition() - this->getPosition();
+	float distance = std::sqrt(delta.x * delta.x + delta.y * delta.y);
 
-	float distance = std::sqrt((center2.x - center1.x) * (center2.x - center1.x) + (center2.y - center1.y) * (center2.y - center1.y));
-	float sumRadii = this->getRadius() + c2.getRadius();
-	float overlapDistance = sumRadii - distance;
-	float separationDistance = overlapDistance / 2.0f;
+	if (distance < this->getRadius() + other.getRadius())
+	{
+		float overlap = (this->getRadius() + other.getRadius()) - distance;
+		sf::Vector2f normal = delta / distance;
 
-	// Calculate the direction from circle1 to circle2
-	sf::Vector2f separationDirection = (center2 - center1) / distance;
+		sf::Vector2f newVelocity1 = this->getSpeed() + normal * overlap * 0.01f;
+		sf::Vector2f newVelocity2 = other.getSpeed() - normal * overlap * 0.01f;
 
-	// Move both circles away from each other
-	this->setPosition(center1 - separationDirection * separationDistance);
-	c2.setPosition(center2 + separationDirection * separationDistance);
-	this->calculateCollision(c2);
+		this->setSpeed(newVelocity1.x, newVelocity1.y);
+		other.setSpeed(newVelocity2.x, newVelocity2.y);
+
+		this->setPosition(this->getPosition() - normal * overlap * 0.1f);
+		other.setPosition(other.getPosition() + normal * overlap * 0.1f);
+		
+		this->calculateCollision(other);
+	}
 }
 
 void MyCircle::calculateCollision(MyCircle& c2)
@@ -176,8 +209,11 @@ void MyCircle::calculateCollision(MyCircle& c2)
 	sf::Vector2f newVel2 = this->getSpeed();
 	this->_velocity = newVel1;
 	c2._velocity = newVel2;
-	this->randomizeColor();
-	c2.randomizeColor();
+	if (!gravity) 
+	{
+		c2.randomizeColor();
+		this->randomizeColor();
+	}
 }
 
 float MyCircle::getMass() const
@@ -224,7 +260,6 @@ sf::Color MyCircle::HSVtoRGB(float h, float s, float v)
 	default: return sf::Color(static_cast<sf::Uint8>(v * 255), static_cast<sf::Uint8>(p * 255), static_cast<sf::Uint8>(q * 255));
 	}
 }
-
 
 
 

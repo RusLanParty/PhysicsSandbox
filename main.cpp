@@ -2,10 +2,12 @@
 #include <iostream>;
 #include "MyCircle.h";
 
-
-
+bool gravity = false;
 int main()
 {
+    sf::Vector2f prevMousePos;
+    sf::Vector2f offset(0.0f, 0.0f);
+    bool isDragging = false;
     sf::Clock clock;
     sf::Time elapsedTime;
     unsigned int frames = 0;
@@ -19,10 +21,11 @@ int main()
     
     std::vector<MyCircle*> circs;
     circs.push_back(new MyCircle(width / 2, height / 2, 0.0f, 0.0f, 70.0f));
-    circs.push_back(new MyCircle(90.0f, 90.0f, 4.0f, 5.0f, 60.0f));
-    circs.push_back(new MyCircle(width - 90.0f , height - 90.0f, 5.0f, -5.0f, 60.0f));
-    circs.push_back(new MyCircle(90.0f, height - 90.0f, -4.3f, -5.0f, 60.0f));
-    circs.push_back(new MyCircle(width - 90.0f, 90.0f, -4.0f, -3.0f, 60.0f));
+    circs.push_back(new MyCircle(90.0f, 90.0f, 0.0f, 0.0f, 60.0f));
+    circs.push_back(new MyCircle(width - 90.0f , height - 90.0f, 0.0f, 0.0f, 60.0f));
+    circs.push_back(new MyCircle(90.0f, height - 90.0f, 0.0f, 0.0f, 60.0f));
+    circs.push_back(new MyCircle(width - 90.0f, 90.0f, 0.0f, 0.0f, 60.0f));
+    circs.push_back(new MyCircle(width - 200.0f, 350.0f, -24.0f, -32.0f, 35.0f));
 
     sf::Font font;
     if (!font.loadFromFile("arial.ttf"))
@@ -60,7 +63,6 @@ int main()
     fpsText.setFillColor(sf::Color::White);
 
 
-
     while (window.isOpen())
     {
         sf::Event event;
@@ -79,7 +81,22 @@ int main()
                 }
                 else if (event.key.code == sf::Keyboard::Space)
                 {
-                    circs.push_back(new MyCircle());
+                    gravity = !gravity;
+                    if (gravity) 
+                    {
+                        for (auto& circle : circs)
+                        {
+                            circle->randomizeColor();
+                        }
+                    }
+                    else if (!gravity) 
+                    {
+                        for (auto& circle : circs)
+                        {
+                            circle->randomizeSpeed();
+                        }
+                    }
+                    
                 }
                 else if (event.key.code == sf::Keyboard::X)
                 {
@@ -108,6 +125,8 @@ int main()
                             if (c->contains(mousePosF))
                             {
                                 block = true;
+                                isDragging = true;
+                                offset = c->getPosition() - mousePosF;
                             }
                         }
                         if (!block)
@@ -116,6 +135,7 @@ int main()
                         }
                     }
                 }
+                
                 if (event.mouseButton.button == sf::Mouse::Right) 
                 {
                     sf::Vector2i mousePos = sf::Mouse::getPosition();
@@ -132,11 +152,44 @@ int main()
                     }
                 }
             }
+            if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
+            {
+                isDragging = false;               
+            }
         }
-        window.clear();
 
+        window.clear();
+       
         for (auto& c : circs) 
         {
+            if (isDragging)
+            {
+                sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+                sf::Vector2f mousePosF(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
+                if (c->contains(mousePosF)) {
+                    sf::Vector2f newPos = mousePosF + offset;
+                    c->setPosition(newPos);
+                }
+                if (event.type == sf::Event::MouseButtonPressed)
+                {
+                    prevMousePos = mousePosF;
+                }
+                else if (event.type == sf::Event::MouseMoved)
+                {
+                    float deltaTime = static_cast<float>(elapsedTime.asSeconds());
+
+                    // Calculate the change in position (deltaPos)
+                    sf::Vector2f deltaPos = (mousePosF - prevMousePos);
+
+                    // Calculate the X and Y speeds separately
+                    float xSpeed = std::clamp(deltaPos.x / deltaTime, -5.0f, 5.0f);
+                    float ySpeed = std::clamp(deltaPos.y / deltaTime, -5.0f, 5.0f);
+                    c->setSpeed(xSpeed, ySpeed);
+                    std::cout << "X Speed: " << xSpeed << ", Y Speed: " << ySpeed << std::endl;
+
+                    prevMousePos = mousePosF;
+                }
+            }
             for (auto& _c : circs) 
             {
                 if (_c != c) 
@@ -147,7 +200,15 @@ int main()
                     }
                 }
             }
-            c->updateColor();
+            if (!gravity) 
+            {
+                c->decreaseSpeed();
+                c->updateColor();
+            }
+            else if (gravity) 
+            {
+                c->setSpeed(c->getSpeed().x, c->getSpeed().y + 0.1f);
+            }
             c->updateMovement();
             window.draw(*c);
         }  
@@ -203,8 +264,6 @@ int main()
             window.draw(text);
             window.draw(text1);
             window.draw(text2);
-            std::cout << "alpha: " << currentAlpha << "\n";
-            std::cout << "alpha1: " << currentAlpha1 << "\n";
         }
         frames++;
         elapsedTime += clock.restart();
@@ -214,6 +273,7 @@ int main()
             fpsText.setString("FPS: " + std::to_string(static_cast<int>(fps)));
             frames = 0;
             elapsedTime = sf::Time::Zero;
+           
         }
 
         // Draw FPS text

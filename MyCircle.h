@@ -16,6 +16,7 @@ public:
 	void setSpeed(float xs, float ys);
 	void invertXSpeed();
 	void invertYSpeed();
+	void decreaseSpeed();
 	void updateMovement();
 	void updateColor();
 	void randomizeColor();
@@ -25,7 +26,7 @@ public:
 	void resolveIntersections(MyCircle& c2);
 	void calculateCollision(MyCircle &c2);
 	std::vector<sf::Vector2f> trail;
-private:
+private:	
 	float hue;
 	float saturation;
 	float value;
