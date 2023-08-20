@@ -5,6 +5,8 @@
 bool gravity = false;
 int main()
 {
+    int frameCounter = 0;
+    int updateFrequency = 10;
     sf::Vector2f prevMousePos;
     sf::Vector2f offset(0.0f, 0.0f);
     bool isDragging = false;
@@ -176,18 +178,23 @@ int main()
                 }
                 else if (event.type == sf::Event::MouseMoved)
                 {
-                    float deltaTime = static_cast<float>(elapsedTime.asSeconds());
+                    frameCounter++;
+                    if (frameCounter >= updateFrequency)
+                    {
+                        frameCounter = 0;
+                        float deltaTime = static_cast<float>(elapsedTime.asSeconds());
 
-                    // Calculate the change in position (deltaPos)
-                    sf::Vector2f deltaPos = (mousePosF - prevMousePos);
+                        // Calculate the change in position (deltaPos)
+                        sf::Vector2f deltaPos = (mousePosF - prevMousePos);
 
-                    // Calculate the X and Y speeds separately
-                    float xSpeed = std::clamp(deltaPos.x / deltaTime, -5.0f, 5.0f);
-                    float ySpeed = std::clamp(deltaPos.y / deltaTime, -5.0f, 5.0f);
-                    c->setSpeed(xSpeed, ySpeed);
-                    std::cout << "X Speed: " << xSpeed << ", Y Speed: " << ySpeed << std::endl;
+                        // Calculate the X and Y speeds separately
+                        float xSpeed = std::clamp(deltaPos.x / deltaTime, -5.0f, 5.0f);
+                        float ySpeed = std::clamp(deltaPos.y / deltaTime, -5.0f, 5.0f);
+                        c->setSpeed(xSpeed, ySpeed);
+                        std::cout << "X Speed: " << xSpeed << ", Y Speed: " << ySpeed << std::endl;
 
-                    prevMousePos = mousePosF;
+                        prevMousePos = mousePosF;
+                    }
                 }
             }
             for (auto& _c : circs) 

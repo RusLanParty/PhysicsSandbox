@@ -71,19 +71,19 @@ void MyCircle::decreaseSpeed()
 {
 	float dx = 0.0f;
 	float dy = 0.0f;
-	if (this->getSpeed().x > 0.0f) 
+	if (this->getSpeed().x > 0.01f) 
 	{
 		dx = 0.004f;
 	}
-	if (this->getSpeed().y > 0.0f)
+	if (this->getSpeed().y > 0.01f)
 	{
 		dy = 0.004f;
 	}
-	if (this->getSpeed().x < 0.0f)
+	if (this->getSpeed().x < -0.01f)
 	{
 		dx = -0.004f;
 	}
-	if (this->getSpeed().y < 0.0f)
+	if (this->getSpeed().y < -0.01f)
 	{
 		dy = -0.004f;
 	}
@@ -108,7 +108,7 @@ void MyCircle::randomizeColor()
 	std::mt19937 gen(rd());
 	std::uniform_int_distribution<int> dis(0, 360);
 	hue = dis(gen);
-	value = 0.3f;
+	value = 0.15f;
 	sf::Color randCol = HSVtoRGB(hue, saturation, value);
 	this->setFillColor(randCol);
 }
@@ -136,7 +136,7 @@ void MyCircle::randomizeSpeed()
 {
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_real_distribution<float> dis(-5.34f, 5.02f);
+	std::uniform_real_distribution<float> dis(-8.34f, 8.02f);
 	float velX = dis(gen);
 	float velY = dis(gen);
 	this->_velocity.x = velX;
