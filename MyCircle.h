@@ -1,7 +1,8 @@
+#ifndef MYCIRCLE_H
+#define MYCIRCLE_H
 #include "SFML/Graphics.hpp";
 #include <iostream>;
 #include <random>;
-
 
 class MyCircle : public sf::CircleShape 
 {
@@ -12,12 +13,13 @@ public:
 	~MyCircle();
 	
 	float getMass() const;
-	sf::Vector2f getSpeed() const;
-	void setSpeed(float xs, float ys);
+	sf::Vector2f getVelocity() const;
+	void setVelocity(float xs, float ys);
+	void setVelocity(sf::Vector2f& vel);
 	void invertXSpeed();
 	void invertYSpeed();
 	void decreaseSpeed();
-	void updateMovement();
+	void updateMovement(float deltaTime);
 	void updateColor();
 	void randomizeColor();
 	void randomizeSpeed();
@@ -25,16 +27,21 @@ public:
 	bool isIntersect(const MyCircle& c2) const;
 	void resolveIntersections(MyCircle& c2);
 	void calculateCollision(MyCircle &c2);
-	std::vector<sf::Vector2f> trail;
+	
 private:	
-	float hue;
-	float saturation;
-	float value;
+	float _hue;
+	float _saturation;
+	float _value;
 	sf::Vector2f _velocity;
 	float mass;
+	sf::Vector2f _oldPos;
 	sf::Vector2f getRandomPos() const;
 	float getRandomRad() const;
 	void initMass();
 	sf::Color HSVtoRGB(float hue, float saturation, float value);
+	void bbox();
+	sf::Vector2f getAcceleration() const;
+	void applyGravity();
 	
 };
+#endif

@@ -135,15 +135,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MyCircle.cpp" />
     <ClCompile Include="MyCircle.h" />
+    <ClCompile Include="MyText.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="arial.ttf" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Global.h" />
+    <ClInclude Include="GameManager.h" />
+    <ClInclude Include="MyText.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

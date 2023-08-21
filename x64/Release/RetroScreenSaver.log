@@ -1,18 +1,24 @@
 ﻿  Scanning sources for module dependencies...
-  MyCircle.cpp
-D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.cpp(1,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.h(1,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.h(2,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.h(3,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.cpp(2,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.cpp(95,11): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.cpp(96,11): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.cpp(110,11): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.cpp(173,11): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.cpp(174,11): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  MyText.cpp
+D:\Visual Studio\Repos\RetroScreenSaver\MyText.h(4,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\MyText.h(5,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\MyText.h(6,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\MyText.cpp(16,12): warning C4244: 'initializing': conversion from 'T' to 'int', possible loss of data
+          with
+          [
+              T=float
+          ]
+D:\Visual Studio\Repos\RetroScreenSaver\MyText.cpp(17,13): warning C4244: 'initializing': conversion from 'T' to 'int', possible loss of data
+          with
+          [
+              T=float
+          ]
+D:\Visual Studio\Repos\RetroScreenSaver\MyText.cpp(24,36): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+D:\Visual Studio\Repos\RetroScreenSaver\MyText.cpp(24,24): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+D:\Visual Studio\Repos\RetroScreenSaver\MyText.cpp(99,12): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
   Generating code
-  2 of 263 functions ( 0.8%) were compiled, the rest were copied from previous compilation.
+  2 of 276 functions ( 0.7%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    0 functions had inline decision re-evaluated but remain unchanged
+    1 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   RetroScreenSaver.vcxproj -> D:\Visual Studio\Repos\RetroScreenSaver\x64\Release\RetroScreenSaver.exe

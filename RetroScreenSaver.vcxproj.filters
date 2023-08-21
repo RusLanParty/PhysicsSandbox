@@ -24,6 +24,12 @@
     <ClCompile Include="MyCircle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GameManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MyText.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Font Include="arial.ttf">
@@ -32,6 +38,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Global.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MyText.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

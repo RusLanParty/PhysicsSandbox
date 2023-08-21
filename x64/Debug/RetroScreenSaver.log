@@ -1,21 +1,43 @@
 ﻿  Scanning sources for module dependencies...
+  GameManager.cpp
+D:\Visual Studio\Repos\RetroScreenSaver\GameManager.h(4,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\GameManager.h(5,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\GameManager.h(6,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.h(3,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.h(4,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.h(5,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\GameManager.h(7,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\MyText.h(4,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\MyText.h(5,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\MyText.h(6,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\GameManager.cpp(14,85): warning C4244: 'argument': conversion from 'T' to 'float', possible loss of data
+          with
+          [
+              T=unsigned int
+          ]
+D:\Visual Studio\Repos\RetroScreenSaver\GameManager.cpp(14,59): warning C4244: 'argument': conversion from 'T' to 'float', possible loss of data
+          with
+          [
+              T=unsigned int
+          ]
+  MyText.cpp
+D:\Visual Studio\Repos\RetroScreenSaver\MyText.h(4,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\MyText.h(5,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\MyText.h(6,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\MyText.cpp(61,12): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
   main.cpp
 D:\Visual Studio\Repos\RetroScreenSaver\main.cpp(1,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
 D:\Visual Studio\Repos\RetroScreenSaver\main.cpp(2,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-D:\Visual Studio\Repos\RetroScreenSaver\main.cpp(3,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.h(1,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.h(2,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
 D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.h(3,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-D:\Visual Studio\Repos\RetroScreenSaver\main.cpp(15,52): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-D:\Visual Studio\Repos\RetroScreenSaver\main.cpp(15,40): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-D:\Visual Studio\Repos\RetroScreenSaver\main.cpp(27,43): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
-          with
-          [
-              T=float
-          ]
-D:\Visual Studio\Repos\RetroScreenSaver\main.cpp(27,31): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
-          with
-          [
-              T=float
-          ]
+D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.h(4,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.h(5,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\main.cpp(3,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\GameManager.h(4,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\GameManager.h(5,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\GameManager.h(6,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\GameManager.h(7,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\MyText.h(4,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\MyText.h(5,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\MyText.h(6,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+  Generating Code...
   RetroScreenSaver.vcxproj -> D:\Visual Studio\Repos\RetroScreenSaver\x64\Debug\RetroScreenSaver.exe
