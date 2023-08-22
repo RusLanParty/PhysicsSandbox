@@ -1,10 +1,9 @@
-#ifndef GAMEMANAGER_H
-#define GAMEMANAGER_H
 #pragma once
-#include <SFML/Graphics.hpp>;
-#include <vector>;
-#include "MyCircle.h";
-#include "MyText.h";
+#include "MyCircle.h"
+#include "MyText.h"
+#include <SFML/Graphics.hpp>
+#include <vector>
+#include <memory>
 
 class GameManager
 {
@@ -13,8 +12,9 @@ public:
 	
 private:
 	sf::RenderWindow* _window;
-	std::vector<MyCircle> _circs;
-	std::vector<MyText> _texts;
+	std::vector<std::unique_ptr<MyCircle>> _circs;
+	std::vector<std::unique_ptr<MyText>> _texts;
+	//std::vector<std::unique_ptr<MyText>> _trash;
 	sf::Clock _clock;
 	sf::Clock _fpsClock;
 	sf::Time _dt;
@@ -31,4 +31,3 @@ private:
 	void showFps();
 	void showIntroText();
 };
-#endif

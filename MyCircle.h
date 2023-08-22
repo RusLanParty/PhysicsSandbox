@@ -1,8 +1,7 @@
-#ifndef MYCIRCLE_H
-#define MYCIRCLE_H
-#include "SFML/Graphics.hpp";
-#include <iostream>;
-#include <random>;
+#pragma once
+#include "SFML/Graphics.hpp"
+#include <iostream>
+#include <random>
 
 class MyCircle : public sf::CircleShape 
 {
@@ -44,4 +43,3 @@ private:
 	void applyGravity();
 	
 };
-#endif

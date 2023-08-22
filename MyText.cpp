@@ -1,72 +1,128 @@
 #include "MyText.h"
-int MyText::fadeInSpeed = 1;
-int MyText::fadeOutSpeed = 1;
-sf::Font MyText::_font;
+float MyText::fadeInSpeed = 0.002f;
+float MyText::fadeOutSpeed = 0.002f;
+int MyText::_count = 0;
+std::queue<MyText*>MyText::_fadeInQ;
+std::queue<MyText*>MyText::_fadeOutQ;
+std::shared_ptr<sf::Font> MyText::_font;
 
-MyText::MyText(const std::string& text, float x, float y) :
+
+MyText::MyText(const std::string& text, float x, float y, std::vector<std::unique_ptr<MyText>>& texts) :
+	_texts(&texts),
+	_rdyForRemove(false),
+	_colorTransition(true),
 	_alpha(0),
-	_fadeState(FadeState::Idle)
+	_fadeState(FadeState::Idle),
+	_hue(0.0f),
+	_saturation(1.0f),
+	_value(0.0f),
+	_id(_count)
 {
-	if (!_font.loadFromFile("arial.ttf")) {
-		std::cout << "Error loading arial.ttf";
-	}
-	else {
-		std::cout << "Font loaded successfully!" << std::endl;
-	}
-	int width = this->getLocalBounds().width;
-	int height = this->getLocalBounds().height;
+	loadFont();
+	_count++;
 	sf::Vector2f position(x, y);
 	this->randomizeColor();
-	this->setFont(_font);
+	this->setFont(*_font);
 	sf::Color color(this->getFillColor());
-	color.a = 0;
-	this->setFillColor(color);
+	_hue = color.r;
+	sf::Color hsv(HSVtoRGB(this->_hue, this->_saturation, this->_value));
+	this->setFillColor(hsv);
+	this->setString(text);
+	this->setCharacterSize(30);
+	float width = this->getLocalBounds().width;
+	float height = this->getLocalBounds().height;
 	this->setOrigin(width / 2, height / 2);
 	this->setPosition(position);
+	this->fadeIn();
+}
+
+MyText::MyText(const std::string& text, float x, float y, std::vector<std::unique_ptr<MyText>>& texts, sf::Color color) :
+	_texts(&texts),
+	_rdyForRemove(false),
+	_colorTransition(false),
+	_alpha(0),
+	_fadeState(FadeState::Idle),
+	_hue(0.0f),
+	_saturation(1.0f),
+	_value(0.0f),
+	_id(_count)
+{
+	loadFont();
+	_count++;
+	sf::Vector2f position(x, y);
+	this->setFont(*_font);
+	this->setFillColor(color);
+	sf::Color hsvColor = RGBtoHSV(this->getFillColor());
+	_hue = hsvColor.r;
+	_saturation = hsvColor.g;
+	sf::Color hsv(HSVtoRGB(this->_hue, this->_saturation, this->_value));
+	this->setFillColor(hsv);
 	this->setString(text);
-	this->setCharacterSize(20);
+	this->setCharacterSize(35);
+	float width = this->getLocalBounds().width;
+	float height = this->getLocalBounds().height;
+	this->setOrigin(width / 2, height / 2);
+	this->setPosition(position);
 	this->fadeIn();
 }
 
 void MyText::updateText()
 {
+	updateNoColor();
+	if (_colorTransition)
+	{
+		this->updateColor();
+	}
 	switch (_fadeState) 
 	{
 	case FadeState::FadingIn:
-		if (!fadingIn()) 
+
+		if (!_fadeInQ.empty())
 		{
-			_fadeState = FadeState::Idle;
+			MyText* text = _fadeInQ.front();
+			if (!text->fadingIn()) 
+			{
+				_fadeState = FadeState::Idle;
+				_fadeInQ.pop();
+			}
 		}
 		break;
+
 	case FadeState::FadingOut:
-		if (!fadingOut()) 
+		if (!_fadeOutQ.empty())
 		{
-			_fadeState = FadeState::Idle;
+			MyText* text = _fadeOutQ.front();
+			if (!text->fadingOut()) 
+			{
+				this->_fadeState = FadeState::Idle;
+				_fadeOutQ.pop();
+				this->_rdyForRemove = true;
+			}
 		}
 		break;
-	default:
+	case FadeState::Idle:
+
 		break;
 	}
 }
 
 void MyText::fadeIn()
 {
-	_fadeState = FadeState::FadingIn;
+	_fadeInQ.push(this);
+	this->_fadeState = FadeState::FadingIn;
 }
 
 void MyText::fadeOut()
 {
-	_fadeState = FadeState::FadingOut;
+	_fadeOutQ.push(this);
+	this->_fadeState = FadeState::FadingOut;
 }
 
 bool MyText::fadingIn()
 {
-	sf::Color color = getFillColor();
-	if (color.a < 255)
+	if (this->_value < 1.0f)
 	{
-		_alpha += fadeInSpeed;
-		color.a = static_cast<sf::Uint8>(_alpha);
-		this->setFillColor(color); 
+		this->_value += fadeInSpeed;
 		return true;
 	}
 	else
@@ -77,12 +133,9 @@ bool MyText::fadingIn()
 
 bool MyText::fadingOut()
 {
-	sf::Color color = getFillColor();
-	if (color.a < 255)
+	if (this->_value > 0.0f)
 	{
-		_alpha -= fadeOutSpeed;
-		color.a = static_cast<sf::Uint8>(_alpha);
-		this->setFillColor(color);
+		this->_value -= fadeOutSpeed;
 		return true;
 	}
 	else
@@ -100,19 +153,102 @@ void MyText::randomizeColor()
 	sf::Color randCol = HSVtoRGB(hue, 1.0f, 1.0f);
 	this->setFillColor(randCol);
 }
-sf::Color MyText::HSVtoRGB(float h, float s, float v)
+void MyText::updateNoColor()
+{	
+	sf::Color hsv(HSVtoRGB(this->_hue, this->_saturation, this->_value));
+	this->setFillColor(hsv);
+}
+void MyText::updateColor()
+{
+		this->_hue += 0.3f;
+		if (this->_hue >= 360.0f)
+		{
+			this->_hue -= 360.0f;
+		}
+
+		// Convert back to RGB and set fill color
+		sf::Color hsv(HSVtoRGB(this->_hue, this->_saturation, this->_value));
+		this->setFillColor(hsv);
+}
+bool MyText::isSafeToRemove()
+{
+	return _rdyForRemove;
+}
+void MyText::loadFont()
+{
+	if (!_font)
+	{
+		_font = std::make_shared<sf::Font>();
+		if (!_font->loadFromFile("arial.ttf"))
+		{
+			std::cout << "Error loading arial.ttf";
+		}
+		else
+		{
+			std::cout << "Font loaded successfully!" << std::endl;
+		}
+	}
+}
+sf::Color MyText::HSVtoRGB(float h, float s, float v) const
 {
 	int hi = static_cast<int>(h / 60) % 6;
 	float f = h / 60 - std::floor(h / 60);
 	float p = v * (1 - s);
 	float q = v * (1 - f * s);
 	float t = v * (1 - (1 - f) * s);
+
+	sf::Uint8 r, g, b;
+
 	switch (hi) {
-	case 0: return sf::Color(static_cast<sf::Uint8>(v * 255), static_cast<sf::Uint8>(t * 255), static_cast<sf::Uint8>(p * 255));
-	case 1: return sf::Color(static_cast<sf::Uint8>(q * 255), static_cast<sf::Uint8>(v * 255), static_cast<sf::Uint8>(p * 255));
-	case 2: return sf::Color(static_cast<sf::Uint8>(p * 255), static_cast<sf::Uint8>(v * 255), static_cast<sf::Uint8>(t * 255));
-	case 3: return sf::Color(static_cast<sf::Uint8>(p * 255), static_cast<sf::Uint8>(q * 255), static_cast<sf::Uint8>(v * 255));
-	case 4: return sf::Color(static_cast<sf::Uint8>(t * 255), static_cast<sf::Uint8>(p * 255), static_cast<sf::Uint8>(v * 255));
-	default: return sf::Color(static_cast<sf::Uint8>(v * 255), static_cast<sf::Uint8>(p * 255), static_cast<sf::Uint8>(q * 255));
+	case 0: r = static_cast<sf::Uint8>(v * 255); g = static_cast<sf::Uint8>(t * 255); b = static_cast<sf::Uint8>(p * 255); break;
+	case 1: r = static_cast<sf::Uint8>(q * 255); g = static_cast<sf::Uint8>(v * 255); b = static_cast<sf::Uint8>(p * 255); break;
+	case 2: r = static_cast<sf::Uint8>(p * 255); g = static_cast<sf::Uint8>(v * 255); b = static_cast<sf::Uint8>(t * 255); break;
+	case 3: r = static_cast<sf::Uint8>(p * 255); g = static_cast<sf::Uint8>(q * 255); b = static_cast<sf::Uint8>(v * 255); break;
+	case 4: r = static_cast<sf::Uint8>(t * 255); g = static_cast<sf::Uint8>(p * 255); b = static_cast<sf::Uint8>(v * 255); break;
+	default: r = static_cast<sf::Uint8>(v * 255); g = static_cast<sf::Uint8>(p * 255); b = static_cast<sf::Uint8>(q * 255); break;
 	}
+
+	return sf::Color(r, g, b);
 }
+sf::Color MyText::RGBtoHSV(const sf::Color& rgbColor) const 
+{
+    float r = (float)rgbColor.r / 255.0f;
+    float g = (float)rgbColor.g / 255.0f;
+    float b = (float)rgbColor.b / 255.0f;
+
+    float maxColor = std::max(r, std::max(g, b));
+    float minColor = std::min(r, std::min(g, b));
+    float delta = maxColor - minColor;
+
+    // Calculate hue
+    float hue = 0.0f;
+    if (delta > 0.0f) {
+        if (maxColor == r) {
+            hue = 60.0f * (fmodf(((g - b) / delta), 6.0f));
+        }
+        else if (maxColor == g) {
+            hue = 60.0f * (((b - r) / delta) + 2.0f);
+        }
+        else if (maxColor == b) {
+            hue = 60.0f * (((r - g) / delta) + 4.0f);
+        }
+    }
+    if (hue < 0.0f) {
+        hue += 360.0f;
+    }
+
+    // Calculate saturation
+    float saturation = (maxColor > 0.0f) ? (delta / maxColor) : 0.0f;
+	
+    // Calculate value
+    float value = maxColor;
+
+    sf::Color hsvColor;
+    hsvColor.r = hue;          // Set hue value
+    hsvColor.g = saturation;   // Set saturation value
+    hsvColor.b = value;        // Set value (brightness) value
+    hsvColor.a = (float)rgbColor.a;   // Preserve alpha value
+
+    return hsvColor;
+}
+

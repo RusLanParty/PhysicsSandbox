@@ -40,8 +40,12 @@ void GameManager::handleInput()
         }
         else if (event.type == event.MouseButtonPressed && event.mouseButton.button== sf::Mouse::Left) 
         {
+            for (auto& tPtr : _texts) 
+            {
+                tPtr->fadeOut();
+            }
             sf::Vector2f mousePosF((float)sf::Mouse::getPosition().x, (float)sf::Mouse::getPosition().y);
-            _circs.emplace_back(MyCircle(mousePosF));
+            _circs.emplace_back(std::make_unique<MyCircle>(mousePosF));
         }
         else if (event.type == event.KeyPressed && event.key.code == sf::Keyboard::X)
         {
@@ -56,8 +60,9 @@ void GameManager::update(float dt)
 {
     if (!_circs.empty()) 
     {
-        for (auto& circle : _circs)
+        for (auto& circlePtr : _circs)
         {
+            MyCircle& circle = *circlePtr;
             circle.updateColor();
             checkForCollisions();
             circle.updateMovement(dt);
@@ -66,9 +71,14 @@ void GameManager::update(float dt)
     }
     if (!_texts.empty()) 
     {
-        for (auto& text : _texts) 
+        for (auto& textPtr : _texts) 
         {
-            text.updateText();
+            MyText& text = *textPtr;
+            text.updateText(); 
+            if (text.isSafeToRemove()) 
+            {
+                
+            }
         }
     }
 }
@@ -76,19 +86,22 @@ void GameManager::update(float dt)
 
 void GameManager::draw()
 {
+
     _window->clear(sf::Color::Black);
-    if (!_circs.empty()) 
+    if (!_texts.empty())
     {
-        for (auto& c : _circs)
+        for (auto& tPtr : _texts)
         {
-            _window->draw(c);
+            MyText& t = *tPtr;
+            _window->draw(t);
         }
     }
-    if (!_texts.empty()) 
+    if (!_circs.empty()) 
     {
-        for (auto& t : _texts) 
+        for (auto& cPtr : _circs)
         {
-            _window->draw(t);
+            MyCircle& c = *cPtr;
+            _window->draw(c);
         }
     }
     _window->display();
@@ -97,10 +110,12 @@ void GameManager::draw()
 
 void GameManager::checkForCollisions()
 {
-    for (auto& circle : _circs)
+    for (auto& circlePtr : _circs)
     {
-        for (auto& circle2 : _circs)
+        for (auto& circle2Ptr : _circs)
         {
+            MyCircle& circle = *circlePtr;
+            MyCircle& circle2 = *circle2Ptr;
             if (&circle != &circle2)
             {
                 if (circle.isIntersect(circle2))
@@ -119,8 +134,9 @@ void GameManager::checkOutOfB()
     float widthBound = static_cast<float>(_window->getSize().x);
     float heightBound = static_cast<float>(_window->getSize().y);
 
-    for (auto& circle : _circs)
+    for (auto& circlePtr : _circs)
     {
+        MyCircle& circle = *circlePtr;
         float radius = circle.getRadius();
         sf::Vector2f newPos = circle.getPosition();
 
@@ -169,10 +185,10 @@ void GameManager::showIntroText()
     const std::string& intr1 = "RIGHT CLICK - DESPAWN CIRCLES";
     const std::string& intr2 = "SPACEBAR - TOGGLE GRAVITY";
     const std::string& intr3 = "X - CLEAR WINDOW";
-    const std::string& intr4 = "INTERACTIVE PHYSICS SIMULATION BY RUSLAN LIBIN";
-    _texts.emplace_back(MyText(intr, 0.0f, 0.0f));
-    _texts.emplace_back(MyText(intr1, _window->getSize().x, _window->getSize().y));
-    _texts.emplace_back(MyText(intr2, _window->getSize().x / 2, _window->getSize().y / 6));
-    _texts.emplace_back(MyText(intr3, _window->getSize().x / 2, _window->getSize().y / 7));
-    _texts.emplace_back(MyText(intr4, _window->getSize().x / 2, _window->getSize().y / 8));
+    const std::string& intr4 = "INTERACTIVE PHYSICS SIMULATION BY RUSLAN LIBIN (https://github.com/RusLanParty)";
+    _texts.emplace_back(std::make_unique<MyText>(intr4, _window->getSize().x / 2, _window->getSize().y / 2, _texts, sf::Color::White));
+    _texts.emplace_back(std::make_unique<MyText>(intr, _window->getSize().x / 2, _window->getSize().y / 2 + 500.0f, _texts));
+    _texts.emplace_back(std::make_unique<MyText>(intr1, _window->getSize().x / 2, _window->getSize().y / 2 + 550.0f, _texts));
+    _texts.emplace_back(std::make_unique<MyText>(intr2, _window->getSize().x / 2, _window->getSize().y / 2 + 600.0f, _texts));
+    _texts.emplace_back(std::make_unique<MyText>(intr3, _window->getSize().x / 2, _window->getSize().y / 2 + 650.0f, _texts));
 }

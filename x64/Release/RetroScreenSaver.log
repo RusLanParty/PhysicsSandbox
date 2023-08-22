@@ -1,23 +1,17 @@
 ﻿  Scanning sources for module dependencies...
-  MyText.cpp
-D:\Visual Studio\Repos\RetroScreenSaver\MyText.h(4,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-D:\Visual Studio\Repos\RetroScreenSaver\MyText.h(5,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-D:\Visual Studio\Repos\RetroScreenSaver\MyText.h(6,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-D:\Visual Studio\Repos\RetroScreenSaver\MyText.cpp(16,12): warning C4244: 'initializing': conversion from 'T' to 'int', possible loss of data
+  GameManager.cpp
+D:\Visual Studio\IDE\VC\Tools\MSVC\14.37.32822\include\memory(3477,56): warning C4244: 'argument': conversion from '_Ty' to 'float', possible loss of data
           with
           [
-              T=float
+              _Ty=unsigned int
           ]
-D:\Visual Studio\Repos\RetroScreenSaver\MyText.cpp(17,13): warning C4244: 'initializing': conversion from 'T' to 'int', possible loss of data
+D:\Visual Studio\Repos\RetroScreenSaver\GameManager.cpp(189,30): message : see reference to function template instantiation 'std::unique_ptr<MyText,std::default_delete<MyText>> std::make_unique<MyText,const std::string&,T,T,std::vector<std::unique_ptr<MyText,std::default_delete<MyText>>,std::allocator<std::unique_ptr<MyText,std::default_delete<MyText>>>>&,const sf::Color&,0>(const std::string &,T &&,T &&,std::vector<std::unique_ptr<MyText,std::default_delete<MyText>>,std::allocator<std::unique_ptr<MyText,std::default_delete<MyText>>>> &,const sf::Color &)' being compiled
           with
           [
-              T=float
+              T=unsigned int
           ]
-D:\Visual Studio\Repos\RetroScreenSaver\MyText.cpp(24,36): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-D:\Visual Studio\Repos\RetroScreenSaver\MyText.cpp(24,24): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-D:\Visual Studio\Repos\RetroScreenSaver\MyText.cpp(99,12): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
   Generating code
-  2 of 276 functions ( 0.7%) were compiled, the rest were copied from previous compilation.
+  1 of 444 functions ( 0.2%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
     1 functions had inline decision re-evaluated but remain unchanged
   Finished generating code

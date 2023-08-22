@@ -3,13 +3,10 @@
 MyCircle::MyCircle() :
 	_oldPos(),
 	_velocity(),
-	_hue(),
-	_saturation(),
-	_value()
+	_hue(0.0f),
+	_saturation(1.0f),
+	_value(0.0f)
 {
-	this->_hue = 0.0f;
-	this->_saturation = 1.0f;
-	this->_value = 0.0f;
 	this->setRadius(getRandomRad());
 	this->initMass();
 	this->randomizeSpeed();
@@ -21,13 +18,10 @@ MyCircle::MyCircle() :
 MyCircle::MyCircle(sf::Vector2f& pos):
 	_oldPos(),
 	_velocity(),
-	_hue(),
-	_saturation(),
-	_value()
+	_hue(0.0f),
+	_saturation(1.0f),
+	_value(0.0f)
 {
-	this->_hue = 0.0f;
-	this->_saturation = 1.0f;
-	this->_value = 0.0f;
 	this->setRadius(getRandomRad());
 	this->initMass();
 	this->randomizeSpeed();
@@ -39,13 +33,10 @@ MyCircle::MyCircle(sf::Vector2f& pos):
 MyCircle::MyCircle(float w, float h, float xs, float ys, float rad):
 	_oldPos(),
 	_velocity(),
-	_hue(),
-	_saturation(),
-	_value()
+	_hue(0.0f),
+	_saturation(1.0f),
+	_value(0.0f)
 {
-	this->_hue = 0.0f;
-	this->_saturation = 1.0f;
-	this->_value = 0.0f;
 	this->setRadius(rad);
 	this->setVelocity(xs, ys);
 	this->initMass();
