@@ -135,19 +135,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="FPSCounter.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MyCircle.cpp" />
     <ClCompile Include="MyCircle.h" />
     <ClCompile Include="MyText.cpp" />
+    <ClCompile Include="PhysicsEngine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="arial.ttf" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FPSCounter.h" />
     <ClInclude Include="Global.h" />
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="MyText.h" />
+    <ClInclude Include="PhysicsEngine.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

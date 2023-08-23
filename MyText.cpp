@@ -1,42 +1,41 @@
 #include "MyText.h"
+#include "GameManager.h"
 float MyText::fadeInSpeed = 0.002f;
 float MyText::fadeOutSpeed = 0.002f;
-int MyText::_count = 0;
+int MyText::count = 0;
+float MyText::seqHue = getRandomHue();
 std::queue<MyText*>MyText::_fadeInQ;
 std::queue<MyText*>MyText::_fadeOutQ;
-std::shared_ptr<sf::Font> MyText::_font;
 
 
-MyText::MyText(const std::string& text, float x, float y, std::vector<std::unique_ptr<MyText>>& texts) :
+MyText::MyText(const std::string& text, float x, float y, sf::Font& font, std::vector<std::unique_ptr<MyText>>& texts) :
 	_texts(&texts),
 	_rdyForRemove(false),
 	_colorTransition(true),
 	_alpha(0),
 	_fadeState(FadeState::Idle),
-	_hue(0.0f),
+	_hue(seqHue),
 	_saturation(1.0f),
 	_value(0.0f),
-	_id(_count)
+	_id(count)
 {
-	loadFont();
-	_count++;
+	_text = std::make_unique<sf::Text>();
+	count++;
 	sf::Vector2f position(x, y);
-	this->randomizeColor();
-	this->setFont(*_font);
-	sf::Color color(this->getFillColor());
-	_hue = color.r;
+	_text->setFont(font);
+	_text->setString(text);
 	sf::Color hsv(HSVtoRGB(this->_hue, this->_saturation, this->_value));
-	this->setFillColor(hsv);
-	this->setString(text);
-	this->setCharacterSize(30);
-	float width = this->getLocalBounds().width;
-	float height = this->getLocalBounds().height;
-	this->setOrigin(width / 2, height / 2);
-	this->setPosition(position);
+	_text->setFillColor(hsv);
+	_text->setCharacterSize(30);
+	float width = _text->getLocalBounds().width;
+	float height = _text->getLocalBounds().height;
+	_text->setOrigin(width / 2, height / 2);
+	_text->setPosition(position);
+	this->cycleColorOnConstruct();
 	this->fadeIn();
 }
 
-MyText::MyText(const std::string& text, float x, float y, std::vector<std::unique_ptr<MyText>>& texts, sf::Color color) :
+MyText::MyText(const std::string& text, float x, float y, sf::Font& font, std::vector<std::unique_ptr<MyText>>& texts, sf::Color color) :
 	_texts(&texts),
 	_rdyForRemove(false),
 	_colorTransition(false),
@@ -45,25 +44,28 @@ MyText::MyText(const std::string& text, float x, float y, std::vector<std::uniqu
 	_hue(0.0f),
 	_saturation(1.0f),
 	_value(0.0f),
-	_id(_count)
+	_id(count)
 {
-	loadFont();
-	_count++;
+	_text = std::make_unique<sf::Text>();
+	count++;
 	sf::Vector2f position(x, y);
-	this->setFont(*_font);
-	this->setFillColor(color);
-	sf::Color hsvColor = RGBtoHSV(this->getFillColor());
+	_text->setString(text);
+	_text->setFont(font);
+	_text->setFillColor(color);
+	sf::Color hsvColor = RGBtoHSV(_text->getFillColor());
 	_hue = hsvColor.r;
 	_saturation = hsvColor.g;
 	sf::Color hsv(HSVtoRGB(this->_hue, this->_saturation, this->_value));
-	this->setFillColor(hsv);
-	this->setString(text);
-	this->setCharacterSize(35);
-	float width = this->getLocalBounds().width;
-	float height = this->getLocalBounds().height;
-	this->setOrigin(width / 2, height / 2);
-	this->setPosition(position);
+	_text->setFillColor(hsv);
+	_text->setCharacterSize(35);
+	float width = _text->getLocalBounds().width;
+	float height = _text->getLocalBounds().height;
+	_text->setOrigin(width / 2, height / 2);
+	_text->setPosition(position);
 	this->fadeIn();
+}
+MyText::~MyText()
+{
 }
 
 void MyText::updateText()
@@ -118,6 +120,8 @@ void MyText::fadeOut()
 	this->_fadeState = FadeState::FadingOut;
 }
 
+
+
 bool MyText::fadingIn()
 {
 	if (this->_value < 1.0f)
@@ -143,20 +147,22 @@ bool MyText::fadingOut()
 		return false;
 	}
 }
-
-void MyText::randomizeColor()
+float MyText::getRandomHue() 
 {
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::uniform_int_distribution<int> dis(0, 360);
 	float hue = dis(gen);
-	sf::Color randCol = HSVtoRGB(hue, 1.0f, 1.0f);
-	this->setFillColor(randCol);
+	return hue;
+}
+void MyText::cycleColorOnConstruct()
+{
+	seqHue = seqHue + 12.0f;
 }
 void MyText::updateNoColor()
 {	
 	sf::Color hsv(HSVtoRGB(this->_hue, this->_saturation, this->_value));
-	this->setFillColor(hsv);
+	_text->setFillColor(hsv);
 }
 void MyText::updateColor()
 {
@@ -168,26 +174,11 @@ void MyText::updateColor()
 
 		// Convert back to RGB and set fill color
 		sf::Color hsv(HSVtoRGB(this->_hue, this->_saturation, this->_value));
-		this->setFillColor(hsv);
+		_text->setFillColor(hsv);
 }
 bool MyText::isSafeToRemove()
 {
 	return _rdyForRemove;
-}
-void MyText::loadFont()
-{
-	if (!_font)
-	{
-		_font = std::make_shared<sf::Font>();
-		if (!_font->loadFromFile("arial.ttf"))
-		{
-			std::cout << "Error loading arial.ttf";
-		}
-		else
-		{
-			std::cout << "Font loaded successfully!" << std::endl;
-		}
-	}
 }
 sf::Color MyText::HSVtoRGB(float h, float s, float v) const
 {

@@ -1,7 +1,6 @@
 #include <iostream>;
 #include "MyCircle.h";
 #include "GameManager.h";
-
 const int FPS = 144;
 
 sf::RenderWindow* createWindow() 
@@ -15,13 +14,26 @@ sf::RenderWindow* createWindow()
     window->setFramerateLimit(FPS);
     return window;
 }
+void run() 
+{
 
+    static std::shared_ptr<sf::Font> font = std::make_shared<sf::Font>();
+    if (!font->loadFromFile("arial.ttf"))
+    {
+        std::cout << "Error loading arial.ttf";
+    }
+    else
+    {         
+        std::cout << "Font loaded successfully!" << std::endl;
+        sf::RenderWindow* window = createWindow();
+        GameManager game(window, font);
+        delete window;
+    }
+}
 
 int main()
 {
-    sf::RenderWindow* window = createWindow();
-    GameManager game(window);
-    delete window;
+    run();
     return 0;
 }
 

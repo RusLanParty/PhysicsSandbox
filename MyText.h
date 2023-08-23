@@ -1,23 +1,26 @@
 #pragma once
-#include <random>
 #include "SFML/Graphics.hpp"
+#include <random>
 #include <iostream>
 #include <queue>
-class MyText : public sf::Text 
+class MyText 
 {
 public:
 	enum class FadeState { Idle, FadingIn, FadingOut };
 	float static fadeInSpeed;
 	float static fadeOutSpeed;
-	int static _count;
+	int static count;
+	static float seqHue;
+	std::unique_ptr<sf::Text> _text;
 
-	MyText(const std::string& text, float x, float y, std::vector<std::unique_ptr<MyText>>& texts);
-	MyText(const std::string& text, float x, float y, std::vector<std::unique_ptr<MyText>>& texts, sf::Color color);
+	MyText(const std::string& text, float x, float y, sf::Font& font, std::vector<std::unique_ptr<MyText>>& texts);
+	MyText(const std::string& text, float x, float y, sf::Font& font, std::vector<std::unique_ptr<MyText>>& texts, sf::Color color);
+	~MyText();
 	void updateText();
 	void fadeIn();
 	void fadeOut();
-	static void loadFont();
 	bool isSafeToRemove();
+	static float getRandomHue();
 	
 private:
 	bool _rdyForRemove;
@@ -31,10 +34,9 @@ private:
 	float _hue;
 	float _saturation;
 	float _value;
-	static std::shared_ptr<sf::Font> _font;
 	bool fadingIn();
 	bool fadingOut();
-	void randomizeColor();
+	void cycleColorOnConstruct();
 	void updateColor();
 	void updateNoColor();
 	sf::Color HSVtoRGB(float h, float s, float v) const;
