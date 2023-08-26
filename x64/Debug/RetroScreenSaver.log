@@ -1,3 +1,9 @@
 ﻿  Scanning sources for module dependencies...
   PhysicsEngine.cpp
-  RetroScreenSaver.vcxproj -> D:\Visual Studio\Repos\RetroScreenSaver\x64\Debug\RetroScreenSaver.exe
+D:\Visual Studio\Repos\RetroScreenSaver\PhysicsEngine.cpp(19,30): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+D:\Visual Studio\Repos\RetroScreenSaver\PhysicsEngine.cpp(20,32): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+D:\Visual Studio\Repos\RetroScreenSaver\PhysicsEngine.cpp(107,32): warning C4305: 'initializing': truncation from 'double' to 'float'
+D:\Visual Studio\Repos\RetroScreenSaver\PhysicsEngine.cpp(114,32): warning C4305: 'initializing': truncation from 'double' to 'float'
+D:\Visual Studio\Repos\RetroScreenSaver\PhysicsEngine.cpp(119,32): warning C4305: 'initializing': truncation from 'double' to 'float'
+D:\Visual Studio\IDE\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(1134,5): error MSB6006: "link.exe" exited with code 1168.
+LINK : fatal error LNK1168: cannot open D:\Visual Studio\Repos\RetroScreenSaver\x64\Debug\RetroScreenSaver.exe for writing

@@ -1,52 +1,43 @@
 #include "MyCircle.h"
-#include "Global.h"
+#include "GameManager.h"
 
 MyCircle::MyCircle():
 	_hue(0.0f),
 	_saturation(1.0f),
-	_value(0.0f),
-	_dimmed(false)
+	_value(0.0f),	
+	_velocity(0.0f, 0.0f)
 {
 	_acceleration = std::make_unique<sf::Vector2f>(0.0f, 0.0f);
-	_oldPos = std::make_unique<sf::Vector2f>();
-	_circle = std::make_unique<sf::CircleShape>();
-	_circle->setRadius(getRandomRad());
-	this->randomizeColor();
+	_oldPos = std::make_unique<sf::Vector2f>(0.0f, 0.0f);
+	float rad = this->getRandomRad();
+	_circle = std::make_unique<sf::CircleShape>(rad);
 	_circle->setOrigin(_circle->getRadius(), _circle->getRadius());
-	sf::Vector2f pos(this->getRandomPos());
-	_circle->setPosition(pos);
+	this->randomizeColor();
+	std::shared_ptr<sf::Vector2f> curPos = std::make_shared<sf::Vector2f>(this->getRandomPos());
+	this->setPositionFromMetersToPixels(curPos);
+	this->setOldPos(curPos);
+	//std::cout << "Random METERS X= " << (float)this->getPositionInMetersFromPixels()->x << " Random METERS Y= " << (float)this->getPositionInMetersFromPixels()->y << " Random PIXELS X= " << (float)this->_circle->getPosition().x << " Random PIXELS Y= " << (float)this->_circle->getPosition().y << "\n";
 }
 
 MyCircle::MyCircle(sf::Vector2f& pos):
 	_hue(0.0f),
 	_saturation(1.0f),
-	_value(0.0f),
-	_dimmed(false)
+	_value(0.0f),	
+	_velocity(0.0f, 0.0f)
 {
 	_acceleration = std::make_unique<sf::Vector2f>(0.0f, 0.0f);
-	_oldPos = std::make_unique<sf::Vector2f>();
-	_circle = std::make_unique<sf::CircleShape>();
-	_circle->setRadius(getRandomRad());
-	this->randomizeSpeed();
-	this->randomizeColor();
+	_oldPos = std::make_unique<sf::Vector2f>(0.0f, 0.0f);
+	float rad = this->getRandomRad();
+	_circle = std::make_unique<sf::CircleShape>(rad);
 	_circle->setOrigin(_circle->getRadius(), _circle->getRadius());
-	_circle->setPosition(pos);
+	this->randomizeColor();
+	std::shared_ptr<sf::Vector2f> curPos = std::make_shared<sf::Vector2f>(pos / Settings::getConversionFactor());
+	this->setPositionFromMetersToPixels(curPos);
+	this->setOldPos(curPos);
+	//this->randomizeVelocity();
+	//std::cout << "Mouse METERS X= " << (float)this->getPositionInMetersFromPixels()->x << " Mouse METERS Y= " << (float)this->getPositionInMetersFromPixels()->y << " Mouse PIXELS X= " << (float)this->_circle->getPosition().x << " Mouse PIXELS Y= " << (float)this->_circle->getPosition().y << "\n";
 }
 
-MyCircle::MyCircle(float x, float y, float xs, float ys, float rad):
-	_hue(0.0f),
-	_saturation(1.0f),
-	_value(0.0f),
-	_dimmed(false)
-{
-	_acceleration = std::make_unique<sf::Vector2f>(0.0f, 0.0f);
-	_oldPos = std::make_unique<sf::Vector2f>();
-	_circle->setRadius(rad);
-	this->accelerate(xs, ys);
-	_circle->setOrigin(_circle->getRadius(), _circle->getRadius());
-	this->randomizeColor();
-	_circle->setPosition(x, y);	
-}
 
 MyCircle::~MyCircle()
 {
@@ -56,7 +47,33 @@ MyCircle::~MyCircle()
 
 std::shared_ptr<sf::Vector2f> MyCircle::getAcceleration() const
 {
-	return this->_acceleration;
+	std::shared_ptr<sf::Vector2f> acc = std::make_shared<sf::Vector2f>(
+		_acceleration->x,
+		_acceleration->y
+	);
+
+	return acc;
+}
+
+std::shared_ptr<sf::Vector2f> MyCircle::getPositionInMetersFromPixels() const
+{
+	std::shared_ptr<sf::Vector2f> pos = std::make_shared<sf::Vector2f> (_circle->getPosition() / Settings::getConversionFactor());
+	return pos;
+}
+
+void MyCircle::setPositionFromMetersToPixels(std::shared_ptr<sf::Vector2f> pos)
+{
+	this->_circle->setPosition(*pos * Settings::getConversionFactor());
+}
+void MyCircle::setPositionFromMetersToPixels(float x, float y)
+{
+	this->_circle->setPosition(x * Settings::getConversionFactor(), y * Settings::getConversionFactor());
+}
+
+
+const float MyCircle::getRadiusInMetersFromPixels() const
+{
+	return this->_circle->getRadius() / Settings::getConversionFactor();
 }
 
 void MyCircle::accelerate(float xv, float yv)
@@ -66,24 +83,16 @@ void MyCircle::accelerate(float xv, float yv)
 }
 void MyCircle::accelerate(std::shared_ptr<sf::Vector2f> acc)
 {
-	std::shared_ptr<sf::Vector2f> addAcc = std::make_shared<sf::Vector2f>(*this->_acceleration + *acc);
-	this->_acceleration = addAcc;
+	*this->_acceleration += *acc;
+
 }
-void MyCircle::invertXSpeed()
+
+void MyCircle::updateColor(float deltaTime)
 {
-	this->_acceleration->x *= -1.0f;
-}
-void MyCircle::invertYSpeed()
-{
-	this->_acceleration->y *= -1.0f;
-}
-void MyCircle::updateColor()
-{
-	if (!_dimmed) 
-	{
-		this->_value += 0.04f;
-		this->_hue += 0.1f;
-	}
+	
+		this->_value += 1.5f * deltaTime;
+		this->_hue += 10.0f * deltaTime;
+
 	if (this->_hue >= 360.0f)
 	{
 		this->_hue -= 360.0f;
@@ -98,14 +107,18 @@ void MyCircle::updateColor()
 
 bool MyCircle::isIntersect(const MyCircle& c2) const
 {
-	float dx = std::pow((c2._circle->getPosition().x - _circle->getPosition().x), 2);
-	float dy = std::pow((c2._circle->getPosition().y - _circle->getPosition().y), 2);
-	float dist = std::sqrt(dx + dy);
-	if (dist < _circle->getRadius() + c2._circle->getRadius())
+	sf::Vector2f delta = *c2.getPositionInMetersFromPixels() - *this->getPositionInMetersFromPixels();
+	float distanceSquared = delta.x * delta.x + delta.y * delta.y;
+	float radiiSumSquared = (this->getRadiusInMetersFromPixels() + c2.getRadiusInMetersFromPixels()) * (this->getRadiusInMetersFromPixels() + c2.getRadiusInMetersFromPixels());
+
+	if (distanceSquared < radiiSumSquared)
 	{
 		return true;
 	}
-	else { return false; }
+	else
+	{
+		return false;
+	}
 }
 
 float MyCircle::getMass() const
@@ -114,11 +127,12 @@ float MyCircle::getMass() const
 }
 std::shared_ptr<sf::Vector2f> MyCircle::getOldPos() const
 {
-	return this->_oldPos;
+	std::shared_ptr<sf::Vector2f> oldPos = std::make_shared<sf::Vector2f>(*this->_oldPos);
+	return oldPos;
 }
 void MyCircle::setOldPos(std::shared_ptr<sf::Vector2f> pos)
 {
-	this->_oldPos = pos;
+	*this->_oldPos = *pos;
 }
 void MyCircle::setOldPosX(float x)
 {
@@ -128,19 +142,12 @@ void MyCircle::setOldPosY(float y)
 {
 	this->_oldPos->y = y;
 }
-std::shared_ptr<sf::Vector2f> MyCircle::getPosition()
-{
-	float x = this->_circle->getPosition().x;
-	float y = this->_circle->getPosition().y;
-	std::shared_ptr<sf::Vector2f> pos = std::make_shared<sf::Vector2f>(x, y);
-	return pos;
-}
 bool MyCircle::contains(sf::Vector2f& p) const
 {
 	float dx = std::pow((_circle->getPosition().x - p.x), 2);
 	float dy = std::pow((_circle->getPosition().y - p.y), 2);
 	float dist = std::sqrt(dx + dy);
-	if (dist <= _circle->getRadius())
+	if (dist <= this->_circle->getRadius())
 	{
 		return true;
 	}
@@ -168,36 +175,67 @@ void MyCircle::resetAcceleration()
 	std::shared_ptr<sf::Vector2f> resAcc = std::make_shared<sf::Vector2f>(0.0f, 0.0f);
 	this->_acceleration = resAcc;
 }
-void MyCircle::dim()
+void MyCircle::reflectVelocity(const sf::Vector2f& collisionNormal, float restitutionCoefficient, float timeStep)
 {
-	_dimmed = true;
-	if (this->_value > 0.3f) 
-	{
-		this->_value - 0.05f;
-	}
+	// Calculate the velocity using the change in position
+	sf::Vector2f velocity = (*this->getPositionInMetersFromPixels() - *getOldPos()) / timeStep;
+
+	// Calculate the dot product between velocity and collision normal
+	float dotProduct = velocity.x * collisionNormal.x + velocity.y * collisionNormal.y;
+
+	// Calculate the angle of incidence
+	float angleOfIncidence = std::atan2(collisionNormal.y, collisionNormal.x);
+
+	// Calculate the angle of reflection
+	float angleOfReflection = 2.0f * angleOfIncidence - std::atan2(velocity.y, velocity.x);
+
+	// Calculate the magnitude of the reflected velocity
+	float reflectedVelocityMagnitude = std::sqrt(velocity.x * velocity.x + velocity.y * velocity.y) * restitutionCoefficient;
+
+	// Calculate the reflected velocity components
+	sf::Vector2f reflectedVelocity;
+	reflectedVelocity.x = reflectedVelocityMagnitude * std::cos(angleOfReflection);
+	reflectedVelocity.y = reflectedVelocityMagnitude * std::sin(angleOfReflection);
+
+	// Update the circle's position and old position
+	std::shared_ptr<sf::Vector2f> newPos = std::make_shared<sf::Vector2f>(*this->getPositionInMetersFromPixels() + reflectedVelocity * timeStep);
+	setOldPos(std::make_shared<sf::Vector2f>(*this->getPositionInMetersFromPixels()));
+	//this->setPositionFromMetersToPixels(newPos);
+	this->accelerate(reflectedVelocity.x, reflectedVelocity.y);
 }
-void MyCircle::unDim()
-{
-	_dimmed = false;
-	if (this->_value < 1.0f)
-	{
-		this->_value + 0.05f;
-	}
-}
+
 sf::Vector2f MyCircle::getRandomPos() const
 {
+	// Get the dimensions of the screen in pixels
+	float screenWidthPixels = static_cast<float>(sf::VideoMode::getDesktopMode().width);
+	float screenHeightPixels = static_cast<float>(sf::VideoMode::getDesktopMode().height);
+
+	// Calculate the valid range for random X and Y positions in pixels
+	float minX = getRadiusInMetersFromPixels();
+	float maxX = screenWidthPixels - getRadiusInMetersFromPixels();
+	float minY = getRadiusInMetersFromPixels();
+	float maxY = screenHeightPixels - getRadiusInMetersFromPixels();
+
+	// Generate random X and Y positions in pixels within the valid range
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_real_distribution<float> xDis(_circle->getRadius(), sf::VideoMode::getDesktopMode().width - 2 * (_circle->getRadius()));
-	std::uniform_real_distribution<float> yDis(_circle->getRadius(), sf::VideoMode::getDesktopMode().height - 2 * (_circle->getRadius()));
-	return sf::Vector2f(xDis(gen), yDis(gen));
+	std::uniform_real_distribution<float> xDis(minX, maxX);
+	std::uniform_real_distribution<float> yDis(minY, maxY);
+
+	// Create and return the random position vector in meters
+	sf::Vector2f randomPosition(
+		xDis(gen) / Settings::getConversionFactor(),
+		yDis(gen) / Settings::getConversionFactor()
+	);
+	return randomPosition;
 }
-float MyCircle::getRandomRad() const
+float MyCircle::getRandomRad() 
 {
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_real_distribution<float> dis(10.5f, 70.0f);
-	return dis(gen);
+	std::uniform_real_distribution<float> dis(0.01f * Settings::getConversionFactor(), 0.1f * Settings::getConversionFactor());
+	float randRad = dis(gen);
+	return randRad;
 }
 void MyCircle::randomizeColor()
 {
@@ -209,13 +247,15 @@ void MyCircle::randomizeColor()
 	sf::Color randCol = HSVtoRGB(this->_hue, this->_saturation, this->_value);
 	_circle->setFillColor(randCol);
 }
-void MyCircle::randomizeSpeed()
+void MyCircle::randomizeVelocity()
 {
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_real_distribution<float> dis(-10.13f, 10.25f);
+	std::uniform_real_distribution<float> dis(-0.0008f , 0.0008f);
 	float velX = dis(gen);
 	float velY = dis(gen);
-	std::shared_ptr<sf::Vector2f> acc = std::make_shared<sf::Vector2f>(velX, velY);
-	this->_acceleration = acc;
+	std::shared_ptr<sf::Vector2f> curPos = std::make_shared<sf::Vector2f>(*this->getPositionInMetersFromPixels());
+	this->setOldPos(curPos);
+	std::shared_ptr<sf::Vector2f> newPos = std::make_shared<sf::Vector2f>(this->getPositionInMetersFromPixels()->x + velX, this->getPositionInMetersFromPixels()->y + velY);
+	this->setPositionFromMetersToPixels(newPos);
 }

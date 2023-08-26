@@ -6,17 +6,17 @@ class FPSCounter
 public:
 	FPSCounter(float x, float y, sf::Font& font);
 	void draw(sf::RenderWindow* window);
-	void displayFps();
+	void displayFps(float deltaTime);
 private:
 	std::unique_ptr<sf::Text> _fpsText;
 	sf::Clock _clock;
 	int _frameCounter;
 	float _deltaFrames;
-	void updateColor(float fps);
+	void updateColor(float fps, float deltaTime);
 	void normalizeHSV();
 	sf::Color HSVtoRGB(float h, float s, float v);
-	float _hue;
+	int _hue;
 	float _sat;
 	float _val;
-	float _colorTransitionSpeed;
+	int _colorTransitionSpeed;
 };

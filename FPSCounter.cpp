@@ -2,11 +2,11 @@
 #include "GameManager.h"
 
 FPSCounter::FPSCounter(float x, float y, sf::Font& font) :
-	_colorTransitionSpeed(2.0f),
+	_colorTransitionSpeed(1),
 	_deltaFrames(10.0f),
 	_frameCounter(0),
-	_hue(0.0f),
-	_sat(1.0f),
+	_hue(0),
+	_sat(0.8f),
 	_val(1.0f)
 {
 	_fpsText = std::make_unique<sf::Text>();
@@ -19,8 +19,8 @@ FPSCounter::FPSCounter(float x, float y, sf::Font& font) :
 }
 
 
-void FPSCounter::displayFps()
-{
+void FPSCounter::displayFps(float deltaTime)
+{	
 	_frameCounter++;
 	if (_frameCounter == _deltaFrames) 
 	{
@@ -29,83 +29,72 @@ void FPSCounter::displayFps()
 		sf::Time elapsed = _clock.restart();
 		int fps = _deltaFrames / elapsed.asSeconds();
 		_fpsText->setString("FPS: " + std::to_string(static_cast<int>(fps)));
-		updateColor(fps);
+		updateColor(fps, deltaTime);
 	}
 }
 
-void FPSCounter::updateColor(float fps)
+void FPSCounter::updateColor(float fps, float deltaTime)
 {
 	if (fps < 30.0f) 
 	{
-		if (this->_hue > 0.0f) 
+		if (this->_hue > 0) 
 		{
-			this->_hue -= _colorTransitionSpeed;
+			this->_hue -= std::ceil(_colorTransitionSpeed * deltaTime);
 		}
-		this->_sat = 1.0f;
-		this->_val = 1.0f;
 		normalizeHSV();
 		sf::Color newColor(HSVtoRGB(this->_hue, this->_sat, this->_val));
 		_fpsText->setFillColor(newColor);
 	}
 	else if (fps > 30.0f && fps < 60.0f) 
 	{
-		if (this->_hue > 30.0f)
+		if (this->_hue > 30)
 		{
-			this->_hue -= _colorTransitionSpeed;
+			this->_hue -= std::ceil(_colorTransitionSpeed * deltaTime);
 		}
-		else if (this->_hue < 30.0f)
+		else if (this->_hue < 30)
 		{
-			this->_hue += _colorTransitionSpeed;
+			this->_hue += std::ceil(_colorTransitionSpeed * deltaTime);
 		}
-		this->_sat = 1.0f;
-		this->_val = 1.0f;
 		normalizeHSV();
 		sf::Color newColor(HSVtoRGB(this->_hue, this->_sat, this->_val));
 		_fpsText->setFillColor(newColor);
 	}
 	else if (fps > 60.0f && fps < 130.0f) 
 	{
-		if (this->_hue > 60.0f)
+		if (this->_hue > 60)
 		{
-			this->_hue -= _colorTransitionSpeed;
+			this->_hue -= std::ceil(_colorTransitionSpeed * deltaTime);
 		}
-		else if (this->_hue < 60.0f)
+		else if (this->_hue < 60)
 		{
-			this->_hue += _colorTransitionSpeed;
+			this->_hue += std::ceil(_colorTransitionSpeed * deltaTime);
 		}
-		this->_sat = 1.0f;
-		this->_val = 1.0f;
 		normalizeHSV();
 		sf::Color newColor(HSVtoRGB(this->_hue, this->_sat, this->_val));
 		_fpsText->setFillColor(newColor);
 	}
 	else if (fps > 130.0f)
 	{
-		if (this->_hue > 120.0f)
+		if (this->_hue > 120)
 		{
-			this->_hue -= _colorTransitionSpeed;
+			this->_hue -= std::ceil(_colorTransitionSpeed * deltaTime);
 		}
-		else if (this->_hue < 120.0f)
+		else if (this->_hue < 120)
 		{
-			this->_hue += _colorTransitionSpeed;
+			this->_hue += std::ceil(_colorTransitionSpeed * deltaTime);
 		}
-		this->_sat = 1.0f;
-		this->_val = 1.0f;
 		normalizeHSV();
 		sf::Color newColor(HSVtoRGB(this->_hue, this->_sat, this->_val));
 		_fpsText->setFillColor(newColor);
 	}
+	//std::cout << "Hue= " << (float)this->_hue << "\n";
 }
 
 void FPSCounter::normalizeHSV()
 {
-	if (this->_hue > 360.0f)
+	if (this->_hue > 360)
 	{
-		this->_hue -= 360.0f;
-	}
-	else if (this->_hue < 0.0f)
-	{
-		this->_hue += 360.0f;
+		this->_hue -= 360;
 	}
 	if (this->_sat > 1.0f)
 	{

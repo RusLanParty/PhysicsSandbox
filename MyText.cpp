@@ -1,9 +1,9 @@
 #include "MyText.h"
 #include "GameManager.h"
-float MyText::fadeInSpeed = 0.002f;
-float MyText::fadeOutSpeed = 0.002f;
+float MyText::fadeInSpeed = 0.45f;
+float MyText::fadeOutSpeed = 0.45f;
 int MyText::count = 0;
-float MyText::seqHue = getRandomHue();
+float MyText::SEQ_HUE = getRandomHue();
 std::queue<MyText*>MyText::_fadeInQ;
 std::queue<MyText*>MyText::_fadeOutQ;
 
@@ -14,10 +14,11 @@ MyText::MyText(const std::string& text, float x, float y, sf::Font& font, std::v
 	_colorTransition(true),
 	_alpha(0),
 	_fadeState(FadeState::Idle),
-	_hue(seqHue),
-	_saturation(1.0f),
+	_hue(SEQ_HUE),
+	_saturation(0.6f),
 	_value(0.0f),
-	_id(count)
+	_id(count),
+	_collision(false)
 {
 	_text = std::make_unique<sf::Text>();
 	count++;
@@ -44,7 +45,8 @@ MyText::MyText(const std::string& text, float x, float y, sf::Font& font, std::v
 	_hue(0.0f),
 	_saturation(1.0f),
 	_value(0.0f),
-	_id(count)
+	_id(count),
+	_collision(true)
 {
 	_text = std::make_unique<sf::Text>();
 	count++;
@@ -68,12 +70,12 @@ MyText::~MyText()
 {
 }
 
-void MyText::updateText()
+void MyText::updateText(float deltaTime)
 {
 	updateNoColor();
 	if (_colorTransition)
 	{
-		this->updateColor();
+		this->updateColor(deltaTime);
 	}
 	switch (_fadeState) 
 	{
@@ -82,7 +84,7 @@ void MyText::updateText()
 		if (!_fadeInQ.empty())
 		{
 			MyText* text = _fadeInQ.front();
-			if (!text->fadingIn()) 
+			if (!text->fadingIn(deltaTime)) 
 			{
 				_fadeState = FadeState::Idle;
 				_fadeInQ.pop();
@@ -93,8 +95,9 @@ void MyText::updateText()
 	case FadeState::FadingOut:
 		if (!_fadeOutQ.empty())
 		{
+			this->_collision = false;
 			MyText* text = _fadeOutQ.front();
-			if (!text->fadingOut()) 
+			if (!text->fadingOut(deltaTime)) 
 			{
 				this->_fadeState = FadeState::Idle;
 				_fadeOutQ.pop();
@@ -103,6 +106,7 @@ void MyText::updateText()
 		}
 		break;
 	case FadeState::Idle:
+		
 
 		break;
 	}
@@ -122,11 +126,11 @@ void MyText::fadeOut()
 
 
 
-bool MyText::fadingIn()
+bool MyText::fadingIn(float deltaTime)
 {
 	if (this->_value < 1.0f)
 	{
-		this->_value += fadeInSpeed;
+		this->_value += fadeInSpeed * deltaTime;
 		return true;
 	}
 	else
@@ -135,11 +139,11 @@ bool MyText::fadingIn()
 	}
 }
 
-bool MyText::fadingOut()
+bool MyText::fadingOut(float deltaTime)
 {
 	if (this->_value > 0.0f)
 	{
-		this->_value -= fadeOutSpeed;
+		this->_value -= fadeOutSpeed * deltaTime;
 		return true;
 	}
 	else
@@ -157,16 +161,16 @@ float MyText::getRandomHue()
 }
 void MyText::cycleColorOnConstruct()
 {
-	seqHue = seqHue + 12.0f;
+	SEQ_HUE = SEQ_HUE - 30.0f;
 }
 void MyText::updateNoColor()
 {	
 	sf::Color hsv(HSVtoRGB(this->_hue, this->_saturation, this->_value));
 	_text->setFillColor(hsv);
 }
-void MyText::updateColor()
+void MyText::updateColor(float deltaTime)
 {
-		this->_hue += 0.3f;
+		this->_hue += 25.0f * deltaTime;
 		if (this->_hue >= 360.0f)
 		{
 			this->_hue -= 360.0f;
@@ -243,3 +247,29 @@ sf::Color MyText::RGBtoHSV(const sf::Color& rgbColor) const
     return hsvColor;
 }
 
+bool MyText::getCollisionsState() const
+{
+	return this->_collision;
+}
+bool MyText::isIntersect(std::shared_ptr<MyCircle> circle) const {
+	sf::Vector2f textPosition = _text->getPosition() / Settings::getConversionFactor();
+	sf::Vector2f textSize = sf::Vector2f(_text->getGlobalBounds().width / Settings::getConversionFactor(), _text->getGlobalBounds().height / Settings::getConversionFactor());
+
+	sf::Vector2f circlePosition = *circle->getPositionInMetersFromPixels();
+	float circleRadius = circle->getRadiusInMetersFromPixels();
+
+	// Calculate the corners of the text's bounding box
+	sf::Vector2f textTopLeft = textPosition - textSize * 0.5f;
+	sf::Vector2f textBottomRight = textPosition + textSize * 0.5f;
+
+	// Calculate the closest point within the text's bounding box to the circle center
+	float closestX = std::clamp(circlePosition.x, textTopLeft.x, textBottomRight.x);
+	float closestY = std::clamp(circlePosition.y, textTopLeft.y, textBottomRight.y);
+
+	// Calculate the distance between the circle center and the closest point
+	float distanceSquared = (circlePosition.x - closestX) * (circlePosition.x - closestX) +
+		(circlePosition.y - closestY) * (circlePosition.y - closestY);
+
+	// Intersection occurs if the distance is less than or equal to the circle radius squared
+	return distanceSquared <= (circleRadius * circleRadius);
+}

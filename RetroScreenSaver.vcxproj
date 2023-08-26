@@ -142,16 +142,18 @@
     <ClCompile Include="MyCircle.h" />
     <ClCompile Include="MyText.cpp" />
     <ClCompile Include="PhysicsEngine.cpp" />
+    <ClCompile Include="Settings.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="arial.ttf" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FPSCounter.h" />
-    <ClInclude Include="Global.h" />
     <ClInclude Include="GameManager.h" />
+    <ClInclude Include="MyObject.h" />
     <ClInclude Include="MyText.h" />
     <ClInclude Include="PhysicsEngine.h" />
+    <ClInclude Include="Settings.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
