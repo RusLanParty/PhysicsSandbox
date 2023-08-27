@@ -1,6 +1,5 @@
 #include "MyCircle.h"
 #include "GameManager.h"
-
 MyCircle::MyCircle():
 	_hue(0.0f),
 	_saturation(1.0f),
@@ -12,7 +11,7 @@ MyCircle::MyCircle():
 	float rad = this->getRandomRad();
 	_circle = std::make_unique<sf::CircleShape>(rad);
 	_circle->setOrigin(_circle->getRadius(), _circle->getRadius());
-	this->randomizeColor();
+	//this->randomizeColor();
 	std::shared_ptr<sf::Vector2f> curPos = std::make_shared<sf::Vector2f>(this->getRandomPos());
 	this->setPositionFromMetersToPixels(curPos);
 	this->setOldPos(curPos);
@@ -30,7 +29,7 @@ MyCircle::MyCircle(sf::Vector2f& pos):
 	float rad = this->getRandomRad();
 	_circle = std::make_unique<sf::CircleShape>(rad);
 	_circle->setOrigin(_circle->getRadius(), _circle->getRadius());
-	this->randomizeColor();
+	//this->randomizeColor();
 	std::shared_ptr<sf::Vector2f> curPos = std::make_shared<sf::Vector2f>(pos / Settings::getConversionFactor());
 	this->setPositionFromMetersToPixels(curPos);
 	this->setOldPos(curPos);
@@ -90,8 +89,8 @@ void MyCircle::accelerate(std::shared_ptr<sf::Vector2f> acc)
 void MyCircle::updateColor(float deltaTime)
 {
 	
-		this->_value += 1.5f * deltaTime;
-		this->_hue += 10.0f * deltaTime;
+		this->_value += 1.3f * deltaTime;
+		this->_hue += 20.0f * deltaTime;
 
 	if (this->_hue >= 360.0f)
 	{
@@ -233,7 +232,7 @@ float MyCircle::getRandomRad()
 {
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_real_distribution<float> dis(0.01f * Settings::getConversionFactor(), 0.1f * Settings::getConversionFactor());
+	std::uniform_real_distribution<float> dis(0.1f * Settings::getConversionFactor(), 0.2f * Settings::getConversionFactor());
 	float randRad = dis(gen);
 	return randRad;
 }
@@ -243,7 +242,7 @@ void MyCircle::randomizeColor()
 	std::mt19937 gen(rd());
 	std::uniform_int_distribution<int> dis(0, 360);
 	this->_hue = dis(gen);
-	this->_value = 0.15f;
+	this->_value = 0.1f;
 	sf::Color randCol = HSVtoRGB(this->_hue, this->_saturation, this->_value);
 	_circle->setFillColor(randCol);
 }

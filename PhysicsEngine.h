@@ -12,14 +12,17 @@ public:
 	bool getGravityState();
 	void resolveIntersections(std::shared_ptr<MyCircle> circle, MyCircle& other);
 	void resolveTextIntersections(std::shared_ptr<MyCircle> circle, MyText& text);
+	void updatePosition(std::shared_ptr<MyCircle> circle, float deltaTime);
+	void drawBound(sf::RenderWindow* window);
 	float _width;
 	float _height;
+private:
+	//std::unique_ptr<sf::CircleShape> _bound;
 	static std::shared_ptr<sf::Vector2f> _gravityValue;
 	static bool _gravity;
 	void applyGravity(std::shared_ptr<MyCircle> circle, float subDt);
-	void updatePosition(std::shared_ptr<MyCircle> circle, float deltaTime);
-	void checkBounds(std::shared_ptr<MyCircle> circle, float deltaTime);
-	sf::Vector2f normalize(const sf::Vector2f& vector);
 	float dot(const sf::Vector2f& vec1, const sf::Vector2f& vec2);
 	float length(const sf::Vector2f& vector);
+	sf::Vector2f normalize(const sf::Vector2f& vector);
+	void checkBounds(std::shared_ptr<MyCircle> circle, float deltaTime);
 };

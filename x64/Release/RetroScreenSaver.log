@@ -1,106 +1,58 @@
 ﻿  Scanning sources for module dependencies...
+  FPSCounter.cpp
+D:\Visual Studio\Repos\RetroScreenSaver\FPSCounter.cpp(17,31): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+D:\Visual Studio\Repos\RetroScreenSaver\FPSCounter.cpp(30,11): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+D:\Visual Studio\Repos\RetroScreenSaver\FPSCounter.cpp(32,15): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+D:\Visual Studio\Repos\RetroScreenSaver\FPSCounter.cpp(42,27): warning C4244: '-=': conversion from 'float' to 'int', possible loss of data
+D:\Visual Studio\Repos\RetroScreenSaver\FPSCounter.cpp(45,35): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+D:\Visual Studio\Repos\RetroScreenSaver\FPSCounter.cpp(52,27): warning C4244: '-=': conversion from 'float' to 'int', possible loss of data
+D:\Visual Studio\Repos\RetroScreenSaver\FPSCounter.cpp(56,27): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+D:\Visual Studio\Repos\RetroScreenSaver\FPSCounter.cpp(59,35): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+D:\Visual Studio\Repos\RetroScreenSaver\FPSCounter.cpp(66,27): warning C4244: '-=': conversion from 'float' to 'int', possible loss of data
+D:\Visual Studio\Repos\RetroScreenSaver\FPSCounter.cpp(70,27): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+D:\Visual Studio\Repos\RetroScreenSaver\FPSCounter.cpp(73,35): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+D:\Visual Studio\Repos\RetroScreenSaver\FPSCounter.cpp(80,27): warning C4244: '-=': conversion from 'float' to 'int', possible loss of data
+D:\Visual Studio\Repos\RetroScreenSaver\FPSCounter.cpp(84,27): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+D:\Visual Studio\Repos\RetroScreenSaver\FPSCounter.cpp(87,35): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+  GameManager.cpp
+D:\Visual Studio\Repos\RetroScreenSaver\GameManager.cpp(197,17): warning C4244: 'initializing': conversion from 'T' to 'float', possible loss of data
+          with
+          [
+              T=unsigned int
+          ]
+D:\Visual Studio\Repos\RetroScreenSaver\GameManager.cpp(198,18): warning C4244: 'initializing': conversion from 'T' to 'float', possible loss of data
+          with
+          [
+              T=unsigned int
+          ]
+D:\Visual Studio\Repos\RetroScreenSaver\GameManager.cpp(219,17): warning C4244: 'initializing': conversion from 'T' to 'float', possible loss of data
+          with
+          [
+              T=unsigned int
+          ]
+D:\Visual Studio\Repos\RetroScreenSaver\GameManager.cpp(220,18): warning C4244: 'initializing': conversion from 'T' to 'float', possible loss of data
+          with
+          [
+              T=unsigned int
+          ]
+  MyCircle.cpp
+D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.cpp(147,11): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.cpp(148,11): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.cpp(245,18): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+  MyText.cpp
+D:\Visual Studio\Repos\RetroScreenSaver\MyText.cpp(158,12): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+D:\Visual Studio\Repos\RetroScreenSaver\MyText.cpp(241,18): warning C4244: '=': conversion from 'float' to 'sf::Uint8', possible loss of data
+D:\Visual Studio\Repos\RetroScreenSaver\MyText.cpp(242,18): warning C4244: '=': conversion from 'float' to 'sf::Uint8', possible loss of data
+D:\Visual Studio\Repos\RetroScreenSaver\MyText.cpp(243,18): warning C4244: '=': conversion from 'float' to 'sf::Uint8', possible loss of data
+D:\Visual Studio\Repos\RetroScreenSaver\MyText.cpp(244,33): warning C4244: '=': conversion from 'float' to 'sf::Uint8', possible loss of data
   PhysicsEngine.cpp
-D:\Visual Studio\IDE\VC\Tools\MSVC\14.37.32822\include\xutility(240,54): error C2665: 'sf::Vector2<float>::Vector2': no overloaded function could convert all the argument types
-F:\libraries\SFML\include\SFML\System\Vector2.hpp(77,1): message : could be 'sf::Vector2<float>::Vector2(sf::Vector2<float> &&)'
-D:\Visual Studio\IDE\VC\Tools\MSVC\14.37.32822\include\xutility(240,54): message : 'sf::Vector2<float>::Vector2(sf::Vector2<float> &&)': cannot convert argument 1 from '_Ty' to 'sf::Vector2<float> &&'
-          with
-          [
-              _Ty=std::shared_ptr<sf::Vector2f>
-          ]
-D:\Visual Studio\IDE\VC\Tools\MSVC\14.37.32822\include\xutility(240,76): message : Reason: cannot convert from '_Ty' to 'sf::Vector2<float>'
-          with
-          [
-              _Ty=std::shared_ptr<sf::Vector2f>
-          ]
-D:\Visual Studio\IDE\VC\Tools\MSVC\14.37.32822\include\xutility(240,76): message : No user-defined-conversion operator available that can perform this conversion, or the operator cannot be called
-F:\libraries\SFML\include\SFML\System\Vector2.hpp(77,1): message : or       'sf::Vector2<float>::Vector2(const sf::Vector2<float> &)'
-D:\Visual Studio\IDE\VC\Tools\MSVC\14.37.32822\include\xutility(240,54): message : 'sf::Vector2<float>::Vector2(const sf::Vector2<float> &)': cannot convert argument 1 from '_Ty' to 'const sf::Vector2<float> &'
-          with
-          [
-              _Ty=std::shared_ptr<sf::Vector2f>
-          ]
-D:\Visual Studio\IDE\VC\Tools\MSVC\14.37.32822\include\xutility(240,76): message : Reason: cannot convert from '_Ty' to 'const sf::Vector2<float>'
-          with
-          [
-              _Ty=std::shared_ptr<sf::Vector2f>
-          ]
-D:\Visual Studio\IDE\VC\Tools\MSVC\14.37.32822\include\xutility(240,76): message : No user-defined-conversion operator available that can perform this conversion, or the operator cannot be called
-F:\libraries\SFML\include\SFML\System\Vector2.hpp(56,5): message : or       'sf::Vector2<float>::Vector2(T,T)'
-          with
-          [
-              T=float
-          ]
-D:\Visual Studio\IDE\VC\Tools\MSVC\14.37.32822\include\xutility(240,54): message : 'sf::Vector2<float>::Vector2': function does not take 1 arguments
-F:\libraries\SFML\include\SFML\System\Vector2.hpp(47,5): message : or       'sf::Vector2<float>::Vector2(void)'
-D:\Visual Studio\IDE\VC\Tools\MSVC\14.37.32822\include\xutility(240,54): message : 'sf::Vector2<float>::Vector2': function does not take 1 arguments
-F:\libraries\SFML\include\SFML\System\Vector2.hpp(70,5): message : or       'sf::Vector2<float>::Vector2(const sf::Vector2<U> &)'
-D:\Visual Studio\IDE\VC\Tools\MSVC\14.37.32822\include\xutility(240,54): message : 'sf::Vector2<float>::Vector2(const sf::Vector2<U> &)': could not deduce template argument for 'const sf::Vector2<U> &' from '_Ty'
-          with
-          [
-              _Ty=std::shared_ptr<sf::Vector2f>
-          ]
-D:\Visual Studio\IDE\VC\Tools\MSVC\14.37.32822\include\xutility(240,54): message : while trying to match the argument list '(_Ty)'
-          with
-          [
-              _Ty=std::shared_ptr<sf::Vector2f>
-          ]
-D:\Visual Studio\IDE\VC\Tools\MSVC\14.37.32822\include\xutility(250,14): message : see reference to function template instantiation '_Ty *std::construct_at<_Ty,std::shared_ptr<_Ty>,0x0>(_Ty *const ,std::shared_ptr<_Ty> &&) noexcept(<expr>)' being compiled
-          with
-          [
-              _Ty=sf::Vector2<float>
-          ]
-D:\Visual Studio\IDE\VC\Tools\MSVC\14.37.32822\include\memory(2104,18): message : see reference to function template instantiation 'void std::_Construct_in_place<_Ty,std::shared_ptr<_Ty>>(_Ty &,std::shared_ptr<_Ty> &&) noexcept(false)' being compiled
-          with
-          [
-              _Ty=sf::Vector2<float>
-          ]
-D:\Visual Studio\IDE\VC\Tools\MSVC\14.37.32822\include\memory(2779,46): message : see reference to function template instantiation 'std::_Ref_count_obj2<sf::Vector2f>::_Ref_count_obj2<_Ty>(_Ty &&)' being compiled
-          with
-          [
-              _Ty=std::shared_ptr<sf::Vector2f>
-          ]
-D:\Visual Studio\Repos\RetroScreenSaver\PhysicsEngine.cpp(122,62): message : see reference to function template instantiation 'std::shared_ptr<sf::Vector2f> std::make_shared<sf::Vector2f,std::shared_ptr<sf::Vector2f>>(std::shared_ptr<sf::Vector2f> &&)' being compiled
-D:\Visual Studio\IDE\VC\Tools\MSVC\14.37.32822\include\xutility(254,61): error C2665: 'sf::Vector2<float>::Vector2': no overloaded function could convert all the argument types
-F:\libraries\SFML\include\SFML\System\Vector2.hpp(77,1): message : could be 'sf::Vector2<float>::Vector2(sf::Vector2<float> &&)'
-D:\Visual Studio\IDE\VC\Tools\MSVC\14.37.32822\include\xutility(254,61): message : 'sf::Vector2<float>::Vector2(sf::Vector2<float> &&)': cannot convert argument 1 from '_Ty' to 'sf::Vector2<float> &&'
-          with
-          [
-              _Ty=std::shared_ptr<sf::Vector2f>
-          ]
-D:\Visual Studio\IDE\VC\Tools\MSVC\14.37.32822\include\xutility(254,82): message : Reason: cannot convert from '_Ty' to 'sf::Vector2<float>'
-          with
-          [
-              _Ty=std::shared_ptr<sf::Vector2f>
-          ]
-D:\Visual Studio\IDE\VC\Tools\MSVC\14.37.32822\include\xutility(254,82): message : No user-defined-conversion operator available that can perform this conversion, or the operator cannot be called
-F:\libraries\SFML\include\SFML\System\Vector2.hpp(77,1): message : or       'sf::Vector2<float>::Vector2(const sf::Vector2<float> &)'
-D:\Visual Studio\IDE\VC\Tools\MSVC\14.37.32822\include\xutility(254,61): message : 'sf::Vector2<float>::Vector2(const sf::Vector2<float> &)': cannot convert argument 1 from '_Ty' to 'const sf::Vector2<float> &'
-          with
-          [
-              _Ty=std::shared_ptr<sf::Vector2f>
-          ]
-D:\Visual Studio\IDE\VC\Tools\MSVC\14.37.32822\include\xutility(254,82): message : Reason: cannot convert from '_Ty' to 'const sf::Vector2<float>'
-          with
-          [
-              _Ty=std::shared_ptr<sf::Vector2f>
-          ]
-D:\Visual Studio\IDE\VC\Tools\MSVC\14.37.32822\include\xutility(254,82): message : No user-defined-conversion operator available that can perform this conversion, or the operator cannot be called
-F:\libraries\SFML\include\SFML\System\Vector2.hpp(56,5): message : or       'sf::Vector2<float>::Vector2(T,T)'
-          with
-          [
-              T=float
-          ]
-D:\Visual Studio\IDE\VC\Tools\MSVC\14.37.32822\include\xutility(254,61): message : 'sf::Vector2<float>::Vector2': function does not take 1 arguments
-F:\libraries\SFML\include\SFML\System\Vector2.hpp(47,5): message : or       'sf::Vector2<float>::Vector2(void)'
-D:\Visual Studio\IDE\VC\Tools\MSVC\14.37.32822\include\xutility(254,61): message : 'sf::Vector2<float>::Vector2': function does not take 1 arguments
-F:\libraries\SFML\include\SFML\System\Vector2.hpp(70,5): message : or       'sf::Vector2<float>::Vector2(const sf::Vector2<U> &)'
-D:\Visual Studio\IDE\VC\Tools\MSVC\14.37.32822\include\xutility(254,61): message : 'sf::Vector2<float>::Vector2(const sf::Vector2<U> &)': could not deduce template argument for 'const sf::Vector2<U> &' from '_Ty'
-          with
-          [
-              _Ty=std::shared_ptr<sf::Vector2f>
-          ]
-D:\Visual Studio\IDE\VC\Tools\MSVC\14.37.32822\include\xutility(254,61): message : while trying to match the argument list '(_Ty)'
-          with
-          [
-              _Ty=std::shared_ptr<sf::Vector2f>
-          ]
+  main.cpp
+D:\Visual Studio\Repos\RetroScreenSaver\main.cpp(1,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\main.cpp(2,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\RetroScreenSaver\main.cpp(3,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+  Generating code
+  7 of 641 functions ( 1.1%) were compiled, the rest were copied from previous compilation.
+    1 functions were new in current compilation
+    4 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  RetroScreenSaver.vcxproj -> D:\Visual Studio\Repos\RetroScreenSaver\x64\Release\RetroScreenSaver.exe

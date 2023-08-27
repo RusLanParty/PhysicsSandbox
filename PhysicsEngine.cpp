@@ -2,6 +2,7 @@
 #include "GameManager.h"
 #include "MyText.h"
 #include <SFML/System/Vector2.hpp>
+#include <SFML/Graphics.hpp>
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
@@ -21,6 +22,11 @@ PhysicsEngine::PhysicsEngine()
     sf::VideoMode windowRes = sf::VideoMode::getDesktopMode();
     _width = static_cast<float>(windowRes.width) / Settings::getConversionFactor();
     _height = static_cast<float>(windowRes.height) / Settings::getConversionFactor();
+    //_bound = std::make_unique<sf::CircleShape>(5.0f * Settings::getConversionFactor());
+   // _bound->setFillColor(sf::Color::Black);
+    //_bound->setOrigin(_bound->getRadius(), _bound->getRadius());
+    //_bound->setPosition(_width / 2 * Settings::getConversionFactor(), _height / 2 * Settings::getConversionFactor());
+    //std::cout << "X= " << _bound->getPosition().x / Settings::getConversionFactor() << " Y= " << _bound->getPosition().y / Settings::getConversionFactor() << "\n";
 }
 
 void PhysicsEngine::applyPhysics(std::shared_ptr<MyCircle> circle, float deltaTime)
@@ -37,11 +43,11 @@ void PhysicsEngine::applyPhysics(std::shared_ptr<MyCircle> circle, float deltaTi
             applyGravity(circle, sub_dt);
         }
 
-        // Checking bounds and handling collisions with them
-        checkBounds(circle, sub_dt);
-
         // Performing verlet integration, using acceleration accumulated from the forces applied above
         updatePosition(circle, sub_dt);
+
+        // Checking bounds and handling collisions with them
+        checkBounds(circle, sub_dt);
     }
 }
 void PhysicsEngine::updatePosition(std::shared_ptr<MyCircle> circle, float deltaTime)
@@ -55,6 +61,10 @@ void PhysicsEngine::updatePosition(std::shared_ptr<MyCircle> circle, float delta
 
     // Reset acceleration
     circle->resetAcceleration();
+}
+void PhysicsEngine::drawBound(sf::RenderWindow* window)
+{
+    //window->draw(*_bound);
 }
 void PhysicsEngine::resolveIntersections(std::shared_ptr<MyCircle> circle, MyCircle& other)
 {
@@ -92,7 +102,7 @@ void PhysicsEngine::resolveIntersections(std::shared_ptr<MyCircle> circle, MyCir
 
 void PhysicsEngine::resolveTextIntersections(std::shared_ptr<MyCircle> circle, MyText& text)
 {
-    float bounciness = 1.0f;
+    float bounciness = 0.08f;
     sf::Vector2f circleCenter = *circle->getPositionInMetersFromPixels();
     sf::Vector2f textPosition = text._text->getPosition() / Settings::getConversionFactor();
     sf::FloatRect globalBounds = text._text->getGlobalBounds();
@@ -119,17 +129,20 @@ void PhysicsEngine::resolveTextIntersections(std::shared_ptr<MyCircle> circle, M
 
         // Adjust circle's current and previous positions to resolve overlap
         circleCenter += correction;  // Apply correction to current position
-        std::shared_ptr<sf::Vector2f> oldCircleCenter = std::make_shared<sf::Vector2f>(circle->getOldPos());
+        sf::Vector2f oldCircleCenter = *circle->getOldPos();
 
         // Reflect the position based on bounciness
-        sf::Vector2f newCircleCenter = circleCenter + bounciness * (circleCenter - *oldCircleCenter);
+        sf::Vector2f newCircleCenter = circleCenter + bounciness * (circleCenter - oldCircleCenter);
+
+        // Calculate acceleration (change in position)
+        sf::Vector2f acceleration = newCircleCenter - circleCenter;
 
         // Set the new position for the circle using Verlet integration
-        std::shared_ptr<sf::Vector2f> newPos = std::make_shared<sf::Vector2f>(newCircleCenter);
+       std::shared_ptr<sf::Vector2f> newPos = std::make_shared<sf::Vector2f>(2.0f * newCircleCenter - circleCenter + acceleration);
         circle->setPositionFromMetersToPixels(newPos);
 
         // Store the current position as previous position for the next frame
-        circle->setOldPos(newPos);
+        circle->setOldPos(std::make_shared<sf::Vector2f>(circleCenter));
     }
 }
 void PhysicsEngine::toggleGravity()
@@ -150,44 +163,67 @@ void PhysicsEngine::applyGravity(std::shared_ptr<MyCircle> circle, float subDt)
 void PhysicsEngine::checkBounds(std::shared_ptr<MyCircle> circle, float timeStep)
 {
     std::shared_ptr<sf::Vector2f> newPos = std::make_shared<sf::Vector2f>(*circle->getPositionInMetersFromPixels());
-    float restitutionCoefficient = 0.0f; // Adjust this value to control energy loss during bouncing
 
     // X bounds
     if (newPos->x >= _width - circle->getRadiusInMetersFromPixels())
     {
         newPos->x = _width - circle->getRadiusInMetersFromPixels();
-        sf::Vector2f collisionNormal(-1.0f, 0.0f); // Collision normal for X boundary
-        circle->reflectVelocity(collisionNormal, restitutionCoefficient, timeStep);
+
+        // Reflect y velocity and adjust position to create bounce effect
+        sf::Vector2f velocity = *circle->getPositionInMetersFromPixels() - *circle->getOldPos();
+        velocity.y = -velocity.y;
+        newPos->y -= 0.2f * (circle->getRadiusInMetersFromPixels() - (_width - newPos->x));
+
+        // Update old position and set new position
+        *circle->getOldPos() = *circle->getPositionInMetersFromPixels();
+        circle->setPositionFromMetersToPixels(newPos);
     }
     else if (newPos->x <= circle->getRadiusInMetersFromPixels())
     {
         newPos->x = circle->getRadiusInMetersFromPixels();
-        sf::Vector2f collisionNormal(1.0f, 0.0f); // Collision normal for X boundary
-        circle->reflectVelocity(collisionNormal, restitutionCoefficient, timeStep);
+
+        // Reflect y velocity and adjust position to create bounce effect
+        sf::Vector2f velocity = *circle->getPositionInMetersFromPixels() - *circle->getOldPos();
+        velocity.y = -velocity.y;
+        newPos->y -= 0.2f * (circle->getRadiusInMetersFromPixels() - newPos->x);
+
+        // Update old position and set new position
+        *circle->getOldPos() = *circle->getPositionInMetersFromPixels();
+        circle->setPositionFromMetersToPixels(newPos);
     }
 
     // Y bounds
     if (newPos->y >= _height - circle->getRadiusInMetersFromPixels())
     {
         newPos->y = _height - circle->getRadiusInMetersFromPixels();
-        sf::Vector2f collisionNormal(0.0f, -1.0f); // Collision normal for Y boundary
-        circle->reflectVelocity(collisionNormal, restitutionCoefficient, timeStep);
-    }
 
-    // Disable top bound for intro
-    else if (!GameManager::getIntroState())
+        // Reflect x velocity and adjust position to create bounce effect
+        sf::Vector2f velocity = *circle->getPositionInMetersFromPixels() - *circle->getOldPos();
+        velocity.x = -velocity.x;
+        newPos->x -= 0.2f * (circle->getRadiusInMetersFromPixels() - (_height - newPos->y));
+
+        // Update old position and set new position
+        *circle->getOldPos() = *circle->getPositionInMetersFromPixels();
+        circle->setPositionFromMetersToPixels(newPos);
+    }
+    else if (GameManager::getIntroState())
     {
         if (newPos->y <= circle->getRadiusInMetersFromPixels())
-    {
-        newPos->y = circle->getRadiusInMetersFromPixels();
-        sf::Vector2f collisionNormal(0.0f, 1.0f); // Collision normal for Y boundary
-        circle->reflectVelocity(collisionNormal, restitutionCoefficient, timeStep);
+        {
+            newPos->y = circle->getRadiusInMetersFromPixels();
+
+            // Reflect x velocity and adjust position to create bounce effect
+            sf::Vector2f velocity = *circle->getPositionInMetersFromPixels() - *circle->getOldPos();
+            velocity.x = -velocity.x;
+            newPos->x -= 0.2f * (circle->getRadiusInMetersFromPixels() - newPos->y);
+
+            // Update old position and set new position
+            *circle->getOldPos() = *circle->getPositionInMetersFromPixels();
+            circle->setPositionFromMetersToPixels(newPos);
+        }
     }
-    }
-    
-    // Update the position after boundary adjustment
-    circle->setPositionFromMetersToPixels(newPos);
 }
+
 sf::Vector2f PhysicsEngine::normalize(const sf::Vector2f& vector) {
     float length = std::sqrt(vector.x * vector.x + vector.y * vector.y);
     if (length != 0.0f) {

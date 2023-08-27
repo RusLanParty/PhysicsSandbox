@@ -1,18 +1,18 @@
 #include "GameManager.h"
 #include "MyText.h"
 #include "FPSCounter.h"
-
-bool GameManager::isIntro = false;
+static bool introComplete = false;
 bool isMousePressed = false;
-float timeSinceLastSpawn = 0.1f;
-float spawnInterval = 0.1f;
+float timeSinceLastSpawn = 0.3f;
+float spawnInterval = 0.3f;
 uint32_t spwnCount = 0;
+int OBJCOUNT = 0;
 
 GameManager::GameManager(sf::RenderWindow* window, std::shared_ptr<sf::Font> font) :
     _window(window),
     _physicsEngine(),
     _font(font),
-    _fpsCounter(0.0f, 0.0f, *font),
+    _fpsCounter(0.0f, 0.0f, 100.0f, 0.0f, *font),
     _circs(),
     _texts()
 {
@@ -23,7 +23,12 @@ GameManager::GameManager(sf::RenderWindow* window, std::shared_ptr<sf::Font> fon
 
 bool GameManager::getIntroState()
 {
-    return isIntro;
+    return introComplete;
+}
+
+int GameManager::getObjectCount()
+{
+    return OBJCOUNT;
 }
 
 void GameManager::run()
@@ -32,67 +37,66 @@ void GameManager::run()
     {
         _dt = _clock.restart();
         float deltaTime = _dt.asSeconds();
-        if (isIntro) { intro(deltaTime); }
+        if (!introComplete) { intro(deltaTime); }
 
         handleInput(deltaTime);
         update(deltaTime);
-        _fpsCounter.displayFps(deltaTime);
-        draw();
+        draw(deltaTime);
+        disposeTrash();
     }
 }
 
-void GameManager::handleInput(float deltaTime)
+void GameManager::keyboardInput(float deltaTime, sf::Event event)
 {
-    sf::Event event;
-    while (_window->pollEvent(event)) 
-    {
-        if (event.type == event.KeyPressed) 
+        if (event.type == event.KeyPressed)
         {
-            if (event.key.code == sf::Keyboard::Escape) 
+            if (event.key.code == sf::Keyboard::Escape)
             {
                 _window->close();
             }
             else if (event.key.code == sf::Keyboard::X)
             {
-                for (auto& tPtr : _texts)
-                {
-                    tPtr->fadeOut();
-                }
                 _circs.clear();
             }
-            else if (event.key.code == sf::Keyboard::S) 
+            else if (event.key.code == sf::Keyboard::S)
             {
-                for (auto& tPtr : _texts)
-                {
-                    tPtr->fadeOut();
-                }
-                for (int i = 0; i < 20; i++) 
+                for (int i = 0; i < 20; i++)
                 {
                     _circs.emplace_back(std::make_unique<MyCircle>());
                 }
             }
-            else if (event.key.code == sf::Keyboard::G) 
+            else if (event.key.code == sf::Keyboard::G)
             {
-                for (auto& tPtr : _texts)
-                {
-                    tPtr->fadeOut();
-                }
                 _physicsEngine.toggleGravity();
+                float width = _window->getSize().x;
+                float height = _window->getSize().y;
+
+                float offsetY = height * 0.05f;
+                float offsetX = width * 0.05f;
+                if (_physicsEngine.getGravityState())
+                {
+                    std::string state = "GRAVITY ENABLED";
+                    _texts.emplace_back(std::make_unique<MyText>(state, width / 2, height - 15 * offsetY, *_font, _texts, sf::Color::Green, true));
+                }
+                else
+                {
+                    std::string state = "GRAVITY DISABLED";
+                    _texts.emplace_back(std::make_unique<MyText>(state, width / 2, height - 15 * offsetY, *_font, _texts, sf::Color::Red, true));
+                }
             }
         }
-        else if (event.type == event.MouseButtonPressed && event.mouseButton.button== sf::Mouse::Left) 
+}
+
+void GameManager::mouseInput(float deltaTime, sf::Event event)
+{
+        if (event.type == event.MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
         {
-            for (auto& tPtr : _texts) 
-            {
-                tPtr->fadeOut();
-            }
             isMousePressed = true;
-            
         }
-        else if (event.type == event.MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left) 
+        else if (event.type == event.MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
         {
             isMousePressed = false;
-            
+
         }
         if (isMousePressed)
         {
@@ -102,25 +106,46 @@ void GameManager::handleInput(float deltaTime)
             if (timeSinceLastSpawn >= spawnInterval)
             {
                 sf::Vector2f mousePosF((float)sf::Mouse::getPosition().x, (float)sf::Mouse::getPosition().y);
-                _circs.emplace_back(std::make_unique<MyCircle>(mousePosF));   
+                _circs.emplace_back(std::make_unique<MyCircle>(mousePosF));
                 timeSinceLastSpawn = 0.0f;
             }
         }
-    }
-    
 }
+
+void GameManager::disposeTrash()
+{
+    // Text
+    auto iteratorToRemove = std::remove_if(_texts.begin(), _texts.end(),
+        [](std::unique_ptr<MyText>& textPtr) {
+            return textPtr->isSafeToRemove();
+        });
+
+    for (auto it = iteratorToRemove; it != _texts.end(); ++it) {
+        it->reset(); // Release the object pointed to by the shared_ptr
+    }
+
+    _texts.erase(iteratorToRemove, _texts.end()); // Erase the removed elements
+}
+
+void GameManager::handleInput(float deltaTime)
+{
+    sf::Event event;
+    while (_window->pollEvent(event))
+    {
+        keyboardInput(deltaTime, event);
+        mouseInput(deltaTime, event);
+    }
+}
+    
 void GameManager::update(float deltaTime)
 {
+    OBJCOUNT = _circs.size();
     if (!_circs.empty())
     {
-        for (auto& circlePtr : _circs)
-        {
-            _physicsEngine.applyPhysics(circlePtr, deltaTime);
-            circlePtr->updateColor(deltaTime);
-        }
-
         for (size_t i = 0; i < _circs.size(); ++i)
         {
+            _physicsEngine.applyPhysics(_circs[i], deltaTime);
+            _circs[i]->updateColor(deltaTime);
             for (size_t j = i + 1; j < _circs.size(); ++j)
             {
                 if (_circs[i]->isIntersect(*_circs[j]))
@@ -129,6 +154,7 @@ void GameManager::update(float deltaTime)
                 }
             }
 
+            // Text intersections
             if (!_texts.empty())
             {
                 for (auto& textPtr : _texts)
@@ -151,9 +177,10 @@ void GameManager::update(float deltaTime)
     }
 }
 
-void GameManager::draw()
+void GameManager::draw(float deltaTime)
 {
     _window->clear(sf::Color::Black);
+    _physicsEngine.drawBound(_window);
     if (!_texts.empty())
     {
         for (auto& tPtr : _texts)
@@ -170,6 +197,8 @@ void GameManager::draw()
             _window->draw(*c._circle);
         }
     }
+    _fpsCounter.displayFps(deltaTime);
+    _fpsCounter.displayOjbectCount();
     _fpsCounter.draw(_window);
     _window->display();
 }
@@ -192,62 +221,68 @@ void GameManager::showIntro()
     float offsetY = height * offsetYPercent;
 
     // Intro text
-    _texts.emplace_back(std::make_unique<MyText>(intr4, width / 2, height - 15 * offsetY, *_font, _texts, sf::Color::White));
+    _texts.emplace_back(std::make_unique<MyText>(intr4, width / 2, height - 10 * offsetY, *_font, _texts, sf::Color::White));
     _texts.emplace_back(std::make_unique<MyText>(intr, width / 2, height - 4 * offsetY, *_font, _texts));
     _texts.emplace_back(std::make_unique<MyText>(intr1, width / 2, height - 3 * offsetY, *_font, _texts));
     _texts.emplace_back(std::make_unique<MyText>(intr2, width / 2, height - 2 * offsetY, *_font, _texts));
     _texts.emplace_back(std::make_unique<MyText>(intr3, width / 2, height - 1 * offsetY, *_font, _texts));
-
-    // Spawn circles
-    isIntro = true;
 }
 
 void GameManager::intro(float deltaTime)
 {
-    float width = _window->getSize().x;
-    float height = _window->getSize().y;
+        float width = _window->getSize().x;
+        float height = _window->getSize().y;
 
-    // How many circles to spawn
-    uint32_t quantity = 40;
+        // How many circles to spawn
+        uint32_t quantity = 50;
 
-    float offsetY = height * 0.05f;
-    float offsetX = width / quantity;
+        float offsetY = height * 0.05f;
+        float offsetX = width / quantity;
 
-    timeSinceLastSpawn += deltaTime;
+        timeSinceLastSpawn += deltaTime;
 
-    // Check if enough time has passed to spawn a new circle
-    if (timeSinceLastSpawn >= spawnInterval) 
-    {
-        if (spwnCount < quantity)
+        // Check if enough time has passed to spawn a new circle
+        if (timeSinceLastSpawn >= spawnInterval)
         {
-            sf::Vector2f top;
+            if (spwnCount < quantity)
+            {
+                sf::Vector2f top;
+                top.x = offsetX * spwnCount;
+                top.y = -offsetY / 2;
 
-            // For the first circle, spawn a bit further from the left edge
-            if (spwnCount == 0)
-            {
-                top.x = offsetX * spwnCount + offsetX * 0.55f; // Adjust the factor as needed
-            }
-            // For the last circle, spawn a bit further from the right edge
-            else if (spwnCount == quantity - 1)
-            {
-                top.x = offsetX * spwnCount - offsetX * 0.55f; // Adjust the factor as needed
+                _circs.emplace_back(std::make_unique<MyCircle>(top));
+                timeSinceLastSpawn = 0.0f;
+                spwnCount++;
             }
             else
             {
-                top.x = offsetX * spwnCount;
+                for (auto& tPtr : _texts)
+                {
+                    tPtr->fadeOut();
+                }
+                spawnInterval = 0.07f;
+                timeSinceLastSpawn = 0.07f;
+
+                _physicsEngine.toggleGravity();
+
+                float width = _window->getSize().x;
+                float height = _window->getSize().y;
+
+                float offsetY = height * 0.05f;
+                float offsetX = width * 0.05f;
+
+                introComplete = true;
+
+                if (_physicsEngine.getGravityState())
+                {
+                    std::string state = "GRAVITY ENABLED";
+                    _texts.emplace_back(std::make_unique<MyText>(state, width / 2, height - 15 * offsetY, *_font, _texts, sf::Color::Green, true));
+                }
+                else
+                {
+                    std::string state = "GRAVITY DISABLED";
+                    _texts.emplace_back(std::make_unique<MyText>(state, width / 2, height - 15 * offsetY, *_font, _texts, sf::Color::Red, true));
+                }
             }
-
-            top.y = -offsetY;
-
-            _circs.emplace_back(std::make_unique<MyCircle>(top));
-            timeSinceLastSpawn = 0.0f;
-            spwnCount++;
         }
-        else
-        { 
-            isIntro = false; 
-            spawnInterval = 0.08f;
-            timeSinceLastSpawn = 0.08f;
-        }
-    }
 }

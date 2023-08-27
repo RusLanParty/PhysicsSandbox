@@ -1,9 +1,44 @@
 ﻿  Scanning sources for module dependencies...
-  PhysicsEngine.cpp
-D:\Visual Studio\Repos\RetroScreenSaver\PhysicsEngine.cpp(19,30): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-D:\Visual Studio\Repos\RetroScreenSaver\PhysicsEngine.cpp(20,32): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-D:\Visual Studio\Repos\RetroScreenSaver\PhysicsEngine.cpp(107,32): warning C4305: 'initializing': truncation from 'double' to 'float'
-D:\Visual Studio\Repos\RetroScreenSaver\PhysicsEngine.cpp(114,32): warning C4305: 'initializing': truncation from 'double' to 'float'
-D:\Visual Studio\Repos\RetroScreenSaver\PhysicsEngine.cpp(119,32): warning C4305: 'initializing': truncation from 'double' to 'float'
-D:\Visual Studio\IDE\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(1134,5): error MSB6006: "link.exe" exited with code 1168.
-LINK : fatal error LNK1168: cannot open D:\Visual Studio\Repos\RetroScreenSaver\x64\Debug\RetroScreenSaver.exe for writing
+  GameManager.cpp
+D:\Visual Studio\Repos\RetroScreenSaver\GameManager.cpp(71,29): warning C4244: 'initializing': conversion from 'T' to 'float', possible loss of data
+          with
+          [
+              T=unsigned int
+          ]
+D:\Visual Studio\Repos\RetroScreenSaver\GameManager.cpp(72,30): warning C4244: 'initializing': conversion from 'T' to 'float', possible loss of data
+          with
+          [
+              T=unsigned int
+          ]
+D:\Visual Studio\Repos\RetroScreenSaver\GameManager.cpp(142,27): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+D:\Visual Studio\Repos\RetroScreenSaver\GameManager.cpp(214,17): warning C4244: 'initializing': conversion from 'T' to 'float', possible loss of data
+          with
+          [
+              T=unsigned int
+          ]
+D:\Visual Studio\Repos\RetroScreenSaver\GameManager.cpp(215,18): warning C4244: 'initializing': conversion from 'T' to 'float', possible loss of data
+          with
+          [
+              T=unsigned int
+          ]
+D:\Visual Studio\Repos\RetroScreenSaver\GameManager.cpp(233,21): warning C4244: 'initializing': conversion from 'T' to 'float', possible loss of data
+          with
+          [
+              T=unsigned int
+          ]
+D:\Visual Studio\Repos\RetroScreenSaver\GameManager.cpp(234,22): warning C4244: 'initializing': conversion from 'T' to 'float', possible loss of data
+          with
+          [
+              T=unsigned int
+          ]
+D:\Visual Studio\Repos\RetroScreenSaver\GameManager.cpp(268,29): warning C4244: 'initializing': conversion from 'T' to 'float', possible loss of data
+          with
+          [
+              T=unsigned int
+          ]
+D:\Visual Studio\Repos\RetroScreenSaver\GameManager.cpp(269,30): warning C4244: 'initializing': conversion from 'T' to 'float', possible loss of data
+          with
+          [
+              T=unsigned int
+          ]
+  RetroScreenSaver.vcxproj -> D:\Visual Studio\Repos\RetroScreenSaver\x64\Debug\RetroScreenSaver.exe

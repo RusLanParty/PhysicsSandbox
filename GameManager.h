@@ -12,9 +12,9 @@ class GameManager
 public:
 	GameManager(sf::RenderWindow* window, std::shared_ptr<sf::Font> font);
 	static bool getIntroState();
-
+	static int getObjectCount();
 private:
-	static bool isIntro;
+	
 	PhysicsEngine _physicsEngine;
     std::shared_ptr<sf::Font> _font;
 	FPSCounter _fpsCounter;
@@ -27,8 +27,11 @@ private:
 	void handleInput(float deltaTime);
 	void intro(float deltaTime);
 	void update(float dt);
-	void draw();
+	void draw(float deltaTime);
 	void run();
+	void keyboardInput(float deltaTime, sf::Event);
+	void mouseInput(float deltaTime, sf::Event);
+	void disposeTrash();
 	void showIntro();
 	
 };

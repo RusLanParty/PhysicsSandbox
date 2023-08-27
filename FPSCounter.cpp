@@ -1,21 +1,26 @@
 #include "FPSCounter.h"
 #include "GameManager.h"
 
-FPSCounter::FPSCounter(float x, float y, sf::Font& font) :
-	_colorTransitionSpeed(1),
-	_deltaFrames(10.0f),
+FPSCounter::FPSCounter(float x, float y, float z, float w, sf::Font& font) :
+	_colorTransitionSpeed(400),
+	_deltaFrames(20.0f),
+	_deltaFrames1(20.0f),
 	_frameCounter(0),
 	_hue(0),
-	_sat(0.8f),
+	_sat(0.0f),
 	_val(1.0f)
 {
 	_fpsText = std::make_unique<sf::Text>();
+	_objectsText = std::make_unique<sf::Text>();
 	_fpsText->setFont(font);
+	_objectsText->setFont(font);
 	_fpsText->setPosition(x, y);
-	_fpsText->setString("FPS: ");
+	_objectsText->setPosition(z, w);
 	_fpsText->setCharacterSize(20);
+	_objectsText->setCharacterSize(20);
 	sf::Color color(HSVtoRGB(this->_hue, this->_sat, this->_val));
 	_fpsText->setFillColor(color);
+	_objectsText->setFillColor(color);
 }
 
 
@@ -33,8 +38,23 @@ void FPSCounter::displayFps(float deltaTime)
 	}
 }
 
+void FPSCounter::displayOjbectCount()
+{
+	_frameCounter1++;
+	if (_frameCounter1 == _deltaFrames1)
+	{
+		_frameCounter1 = 0;
+		int objCount = GameManager::getObjectCount();
+		_objectsText->setString("OBJECTS COUNT: " + std::to_string(static_cast<int>(objCount)));
+	}
+}
+
 void FPSCounter::updateColor(float fps, float deltaTime)
 {
+	if (this->_sat < 1.0f) 
+	{
+		_sat += 2.5f * deltaTime;
+	}
 	if (fps < 30.0f) 
 	{
 		if (this->_hue > 0) 
@@ -117,6 +137,7 @@ void FPSCounter::normalizeHSV()
 void FPSCounter::draw(sf::RenderWindow* window)
 {
 	window->draw(*_fpsText);
+	window->draw(*_objectsText);
 }
 sf::Color FPSCounter::HSVtoRGB(float h, float s, float v) 
 {

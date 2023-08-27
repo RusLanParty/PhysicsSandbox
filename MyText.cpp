@@ -1,27 +1,27 @@
 #include "MyText.h"
 #include "GameManager.h"
-float MyText::fadeInSpeed = 0.45f;
-float MyText::fadeOutSpeed = 0.45f;
-int MyText::count = 0;
+bool MyText::BLOCKSPAWN = false;
+float MyText::FADEINSPEED = 1.0f;
+float MyText::FADEOUTSPEED = 1.0f;
+int MyText::COUNT = 0;
 float MyText::SEQ_HUE = getRandomHue();
-std::queue<MyText*>MyText::_fadeInQ;
-std::queue<MyText*>MyText::_fadeOutQ;
-
+std::deque<MyText*>MyText::_fadeInQ;
+std::deque<MyText*>MyText::_fadeOutQ;
 
 MyText::MyText(const std::string& text, float x, float y, sf::Font& font, std::vector<std::unique_ptr<MyText>>& texts) :
 	_texts(&texts),
 	_rdyForRemove(false),
 	_colorTransition(true),
-	_alpha(0),
-	_fadeState(FadeState::Idle),
+	_alpha(0),	
 	_hue(SEQ_HUE),
 	_saturation(0.6f),
 	_value(0.0f),
-	_id(count),
-	_collision(false)
+	_id(COUNT),
+	_collision(false),
+	_instantFade(false)
 {
 	_text = std::make_unique<sf::Text>();
-	count++;
+	COUNT++;
 	sf::Vector2f position(x, y);
 	_text->setFont(font);
 	_text->setString(text);
@@ -40,21 +40,20 @@ MyText::MyText(const std::string& text, float x, float y, sf::Font& font, std::v
 	_texts(&texts),
 	_rdyForRemove(false),
 	_colorTransition(false),
-	_alpha(0),
-	_fadeState(FadeState::Idle),
+	_alpha(0),	
 	_hue(0.0f),
 	_saturation(1.0f),
 	_value(0.0f),
-	_id(count),
-	_collision(true)
+	_id(COUNT),
+	_collision(true),
+	_instantFade(false)
 {
 	_text = std::make_unique<sf::Text>();
-	count++;
+	COUNT++;
 	sf::Vector2f position(x, y);
 	_text->setString(text);
 	_text->setFont(font);
-	_text->setFillColor(color);
-	sf::Color hsvColor = RGBtoHSV(_text->getFillColor());
+	sf::Color hsvColor = RGBtoHSV(color);
 	_hue = hsvColor.r;
 	_saturation = hsvColor.g;
 	sf::Color hsv(HSVtoRGB(this->_hue, this->_saturation, this->_value));
@@ -66,62 +65,72 @@ MyText::MyText(const std::string& text, float x, float y, sf::Font& font, std::v
 	_text->setPosition(position);
 	this->fadeIn();
 }
+MyText::MyText(const std::string& text, float x, float y, sf::Font& font, std::vector<std::unique_ptr<MyText>>& texts, sf::Color color, bool instantFade) :
+	_texts(&texts),
+	_rdyForRemove(false),
+	_colorTransition(false),
+	_alpha(0),
+	_hue(SEQ_HUE),
+	_saturation(1.0f),
+	_value(0.0f),
+	_id(COUNT),
+	_collision(false),
+	_instantFade(true)
+{
+	if (BLOCKSPAWN) 
+	{
+		for (auto& text : _fadeInQ) 
+		{
+			text->fadeOut();
+			if (text->_id == _fadeInQ.back()->_id) 
+			{
+				std::cout << "POP" << "\n";
+				_fadeInQ.pop_back();
+			}
+		}
+	}
+	_text = std::make_unique<sf::Text>();
+	COUNT++;
+	sf::Vector2f position(x, y);
+	this->_text->setFont(font);
+	this->_text->setString(text);
+	this->_text->setFillColor(color);
+	sf::Color rgb(RGBtoHSV(this->_text->getFillColor()));
+	this->_hue = rgb.r;
+	sf::Color hsv(HSVtoRGB(this->_hue, this->_saturation, this->_value));
+	_text->setFillColor(hsv);
+	_text->setCharacterSize(30);
+	float width = _text->getLocalBounds().width;
+	float height = _text->getLocalBounds().height;
+	_text->setOrigin(width / 2, height / 2);
+	_text->setPosition(position);
+	BLOCKSPAWN = true;
+	this->fadeIn();
+}
+
 MyText::~MyText()
 {
 }
 
 void MyText::updateText(float deltaTime)
 {
-	updateNoColor();
-	if (_colorTransition)
+	this->updateNoColor(deltaTime);
+	if (this->_colorTransition)
 	{
 		this->updateColor(deltaTime);
 	}
-	switch (_fadeState) 
-	{
-	case FadeState::FadingIn:
-
-		if (!_fadeInQ.empty())
-		{
-			MyText* text = _fadeInQ.front();
-			if (!text->fadingIn(deltaTime)) 
-			{
-				_fadeState = FadeState::Idle;
-				_fadeInQ.pop();
-			}
-		}
-		break;
-
-	case FadeState::FadingOut:
-		if (!_fadeOutQ.empty())
-		{
-			this->_collision = false;
-			MyText* text = _fadeOutQ.front();
-			if (!text->fadingOut(deltaTime)) 
-			{
-				this->_fadeState = FadeState::Idle;
-				_fadeOutQ.pop();
-				this->_rdyForRemove = true;
-			}
-		}
-		break;
-	case FadeState::Idle:
-		
-
-		break;
-	}
+	
 }
+
 
 void MyText::fadeIn()
 {
-	_fadeInQ.push(this);
-	this->_fadeState = FadeState::FadingIn;
+	_fadeInQ.push_front(this);
 }
 
 void MyText::fadeOut()
 {
-	_fadeOutQ.push(this);
-	this->_fadeState = FadeState::FadingOut;
+	_fadeOutQ.push_front(this);
 }
 
 
@@ -130,11 +139,12 @@ bool MyText::fadingIn(float deltaTime)
 {
 	if (this->_value < 1.0f)
 	{
-		this->_value += fadeInSpeed * deltaTime;
+		this->_value += FADEINSPEED * deltaTime;
 		return true;
 	}
 	else
 	{ 
+		this->_value = 1.0f;
 		return false; 
 	}
 }
@@ -143,11 +153,12 @@ bool MyText::fadingOut(float deltaTime)
 {
 	if (this->_value > 0.0f)
 	{
-		this->_value -= fadeOutSpeed * deltaTime;
+		this->_value -= FADEOUTSPEED * deltaTime;
 		return true;
 	}
 	else
 	{
+		this->_value = 0.0f;
 		return false;
 	}
 }
@@ -161,10 +172,40 @@ float MyText::getRandomHue()
 }
 void MyText::cycleColorOnConstruct()
 {
-	SEQ_HUE = SEQ_HUE - 30.0f;
+	SEQ_HUE = SEQ_HUE - 50.0f;
 }
-void MyText::updateNoColor()
-{	
+void MyText::updateNoColor(float deltaTime)
+{
+	if (!_fadeInQ.empty())
+	{
+		if (this->_id == _fadeInQ.back()->_id)
+		{
+			if (!this->fadingIn(deltaTime))
+			{
+				_fadeInQ.pop_back();
+				if (this->_instantFade)
+				{
+					this->fadeOut();
+					BLOCKSPAWN = false;
+				}
+			}
+		}
+	}
+	if (!_fadeOutQ.empty())
+	{
+		if (this->_id == _fadeOutQ.back()->_id)
+		{
+			this->_collision = false;
+			if (!this->fadingOut(deltaTime))
+			{
+				_fadeOutQ.pop_back();
+				this->_rdyForRemove = true;
+			}
+		}
+	}
+	//Normalize the color before setting
+	normalize();
+
 	sf::Color hsv(HSVtoRGB(this->_hue, this->_saturation, this->_value));
 	_text->setFillColor(hsv);
 }
@@ -176,13 +217,14 @@ void MyText::updateColor(float deltaTime)
 			this->_hue -= 360.0f;
 		}
 
-		// Convert back to RGB and set fill color
+		//Normalize the color before setting
+		normalize();
 		sf::Color hsv(HSVtoRGB(this->_hue, this->_saturation, this->_value));
 		_text->setFillColor(hsv);
 }
 bool MyText::isSafeToRemove()
 {
-	return _rdyForRemove;
+	return this->_rdyForRemove;
 }
 sf::Color MyText::HSVtoRGB(float h, float s, float v) const
 {
@@ -228,7 +270,8 @@ sf::Color MyText::RGBtoHSV(const sf::Color& rgbColor) const
             hue = 60.0f * (((r - g) / delta) + 4.0f);
         }
     }
-    if (hue < 0.0f) {
+    if (hue < 0.0f)
+	{
         hue += 360.0f;
     }
 
@@ -272,4 +315,36 @@ bool MyText::isIntersect(std::shared_ptr<MyCircle> circle) const {
 
 	// Intersection occurs if the distance is less than or equal to the circle radius squared
 	return distanceSquared <= (circleRadius * circleRadius);
+}
+void MyText::normalize() 
+{
+	// Hue
+	if (this->_hue < 0.0f)
+	{
+		this->_hue += 360.0f;
+	}
+	else if (this->_hue > 360.0f)
+	{
+		this->_hue -= 360.0f;
+	}
+
+	// Saturation
+	if (this->_saturation < 0.0f)
+	{
+		this->_saturation =0.0f;
+	}
+	else if (this->_saturation > 1.0f)
+	{
+		this->_saturation = 1.0f;
+	}
+
+	// Value
+	if (this->_value < 0.0f)
+	{
+		this->_value = 0.0f;
+	}
+	else if (this->_value > 1.0f)
+	{
+		this->_value = 1.0f;
+	}
 }
