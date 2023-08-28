@@ -1,44 +1,4 @@
-﻿  Scanning sources for module dependencies...
-  GameManager.cpp
-D:\Visual Studio\Repos\RetroScreenSaver\GameManager.cpp(71,29): warning C4244: 'initializing': conversion from 'T' to 'float', possible loss of data
-          with
-          [
-              T=unsigned int
-          ]
-D:\Visual Studio\Repos\RetroScreenSaver\GameManager.cpp(72,30): warning C4244: 'initializing': conversion from 'T' to 'float', possible loss of data
-          with
-          [
-              T=unsigned int
-          ]
-D:\Visual Studio\Repos\RetroScreenSaver\GameManager.cpp(142,27): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-D:\Visual Studio\Repos\RetroScreenSaver\GameManager.cpp(214,17): warning C4244: 'initializing': conversion from 'T' to 'float', possible loss of data
-          with
-          [
-              T=unsigned int
-          ]
-D:\Visual Studio\Repos\RetroScreenSaver\GameManager.cpp(215,18): warning C4244: 'initializing': conversion from 'T' to 'float', possible loss of data
-          with
-          [
-              T=unsigned int
-          ]
-D:\Visual Studio\Repos\RetroScreenSaver\GameManager.cpp(233,21): warning C4244: 'initializing': conversion from 'T' to 'float', possible loss of data
-          with
-          [
-              T=unsigned int
-          ]
-D:\Visual Studio\Repos\RetroScreenSaver\GameManager.cpp(234,22): warning C4244: 'initializing': conversion from 'T' to 'float', possible loss of data
-          with
-          [
-              T=unsigned int
-          ]
-D:\Visual Studio\Repos\RetroScreenSaver\GameManager.cpp(268,29): warning C4244: 'initializing': conversion from 'T' to 'float', possible loss of data
-          with
-          [
-              T=unsigned int
-          ]
-D:\Visual Studio\Repos\RetroScreenSaver\GameManager.cpp(269,30): warning C4244: 'initializing': conversion from 'T' to 'float', possible loss of data
-          with
-          [
-              T=unsigned int
-          ]
-  RetroScreenSaver.vcxproj -> D:\Visual Studio\Repos\RetroScreenSaver\x64\Debug\RetroScreenSaver.exe
+﻿D:\Visual Studio\IDE\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(531,5): warning MSB8028: The intermediate directory (x64\Debug\) contains files shared from another project (RetroScreenSaver.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  Scanning sources for module dependencies...
+  PhysicsEngine.cpp
+  RetroScreenSaver.vcxproj -> D:\Visual Studio\Repos\RetroScreenSaver\x64\Debug\PhysicsSandbox.exe

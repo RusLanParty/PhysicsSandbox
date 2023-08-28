@@ -10,9 +10,8 @@ public:
 	void applyPhysics(std::shared_ptr<MyCircle> circle, float deltaTime);
 	void toggleGravity();
 	bool getGravityState();
-	void resolveIntersections(std::shared_ptr<MyCircle> circle, MyCircle& other);
+	void resolveCollision(std::shared_ptr<MyCircle> circle, std::shared_ptr<MyCircle> circle2);
 	void resolveTextIntersections(std::shared_ptr<MyCircle> circle, MyText& text);
-	void updatePosition(std::shared_ptr<MyCircle> circle, float deltaTime);
 	void drawBound(sf::RenderWindow* window);
 	float _width;
 	float _height;
@@ -25,4 +24,6 @@ private:
 	float length(const sf::Vector2f& vector);
 	sf::Vector2f normalize(const sf::Vector2f& vector);
 	void checkBounds(std::shared_ptr<MyCircle> circle, float deltaTime);
+	void updatePosition(std::shared_ptr<MyCircle> circle, float deltaTime);
+	void updateVelocity(std::shared_ptr<MyCircle> circle, float deltaTIme);
 };

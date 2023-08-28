@@ -22,7 +22,7 @@ MyText::MyText(const std::string& text, float x, float y, sf::Font& font, std::v
 {
 	_text = std::make_unique<sf::Text>();
 	COUNT++;
-	sf::Vector2f position(x, y);
+	sf::Vector2f position(x * Settings::getConversionFactor(), y * Settings::getConversionFactor());
 	_text->setFont(font);
 	_text->setString(text);
 	sf::Color hsv(HSVtoRGB(this->_hue, this->_saturation, this->_value));
@@ -50,7 +50,7 @@ MyText::MyText(const std::string& text, float x, float y, sf::Font& font, std::v
 {
 	_text = std::make_unique<sf::Text>();
 	COUNT++;
-	sf::Vector2f position(x, y);
+	sf::Vector2f position(x * Settings::getConversionFactor(), y * Settings::getConversionFactor());
 	_text->setString(text);
 	_text->setFont(font);
 	sf::Color hsvColor = RGBtoHSV(color);
@@ -84,14 +84,13 @@ MyText::MyText(const std::string& text, float x, float y, sf::Font& font, std::v
 			text->fadeOut();
 			if (text->_id == _fadeInQ.back()->_id) 
 			{
-				std::cout << "POP" << "\n";
 				_fadeInQ.pop_back();
 			}
 		}
 	}
 	_text = std::make_unique<sf::Text>();
 	COUNT++;
-	sf::Vector2f position(x, y);
+	sf::Vector2f position(x * Settings::getConversionFactor(), y * Settings::getConversionFactor());
 	this->_text->setFont(font);
 	this->_text->setString(text);
 	this->_text->setFillColor(color);

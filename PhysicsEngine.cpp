@@ -37,14 +37,19 @@ void PhysicsEngine::applyPhysics(std::shared_ptr<MyCircle> circle, float deltaTi
     // Updating (sub_step) times between each frame to increase precision
     for (int i = 0; i < sub_step - 1; i++)
     {
-        // Applying all forces
+        // Performing leapfrog integration
+
+        // Current position + velocity
+        updatePosition(circle, sub_dt);
+        
+        // Applying all forces and accumulating acceleration
         if (_gravity)
         {
             applyGravity(circle, sub_dt);
         }
 
-        // Performing verlet integration, using acceleration accumulated from the forces applied above
-        updatePosition(circle, sub_dt);
+        // Current velocity + acceleration accumulated in the frame
+        updateVelocity(circle, sub_dt);
 
         // Checking bounds and handling collisions with them
         checkBounds(circle, sub_dt);
@@ -52,98 +57,60 @@ void PhysicsEngine::applyPhysics(std::shared_ptr<MyCircle> circle, float deltaTi
 }
 void PhysicsEngine::updatePosition(std::shared_ptr<MyCircle> circle, float deltaTime)
 {
-    // Verlet Integration: nextPosition = 2 * currentPosition - previousPosition + acceleration * deltaTime
-    std::shared_ptr<sf::Vector2f> newPos = std::make_shared<sf::Vector2f>(2.0f * *circle->getPositionInMetersFromPixels() - *circle->getOldPos() + *circle->getAcceleration() * deltaTime);
-
-    // Update previous position with current
-    circle->setOldPos(circle->getPositionInMetersFromPixels());
+    std::shared_ptr<sf::Vector2f> newPos = std::make_shared<sf::Vector2f>(*circle->getPositionInMetersFromPixels() + (*circle->getVelocity()));
     circle->setPositionFromMetersToPixels(newPos);
-
-    // Reset acceleration
-    circle->resetAcceleration();
 }
 void PhysicsEngine::drawBound(sf::RenderWindow* window)
 {
     //window->draw(*_bound);
 }
-void PhysicsEngine::resolveIntersections(std::shared_ptr<MyCircle> circle, MyCircle& other)
+void PhysicsEngine::updateVelocity(std::shared_ptr<MyCircle> circle, float deltaTime)
 {
-    sf::Vector2f delta = *other.getPositionInMetersFromPixels() - *circle->getPositionInMetersFromPixels();
-    float distance = std::sqrt(delta.x * delta.x + delta.y * delta.y);
+    std::shared_ptr<sf::Vector2f> newVel = std::make_shared<sf::Vector2f>(*circle->getVelocity() + (*circle->getAcceleration() * deltaTime));
+    circle->setVelocity(newVel);
+    circle->resetAcceleration();
+}
+void PhysicsEngine::resolveCollision(std::shared_ptr<MyCircle> circle1, std::shared_ptr<MyCircle> circle2) 
+{
+    sf::Vector2f delta = *circle2->getPositionInMetersFromPixels() - *circle1->getPositionInMetersFromPixels();
+    float distance = length(delta);
 
-    if (distance < circle->getRadiusInMetersFromPixels() + other.getRadiusInMetersFromPixels())
-    {
-        float overlap = (circle->getRadiusInMetersFromPixels() + other.getRadiusInMetersFromPixels()) - distance;
-        sf::Vector2f normal = delta / distance;
+    sf::Vector2f normal = normalize(delta);
 
-        sf::Vector2f newVelocity1 = *circle->getAcceleration() + normal * overlap * 0.1f;
-        sf::Vector2f newVelocity2 = *other.getAcceleration() - normal * overlap * 0.1f;
+    // Calculate mass ratio
+    float massRatio = circle2->getMass() / circle1->getMass();
 
-        circle->accelerate(newVelocity1.x, newVelocity1.y);
-        other.accelerate(newVelocity2.x, newVelocity2.y);
+    // Map mass ratio to restitution
+    float restitution = MyCircle::calculateRestitution(massRatio);
 
-        std::shared_ptr<sf::Vector2f> circlePos = std::make_shared<sf::Vector2f>(*circle->getPositionInMetersFromPixels() - normal * overlap * 0.1f);
-        std::shared_ptr<sf::Vector2f> otherPos = std::make_shared<sf::Vector2f>(*other.getPositionInMetersFromPixels() + normal * overlap * 0.1f);
-        circle->setPositionFromMetersToPixels(circlePos);
-        other.setPositionFromMetersToPixels(otherPos);
+    // Calculate relative velocity
+    sf::Vector2f relativeVelocity = *circle2->getVelocity() - *circle1->getVelocity();
+    float relativeSpeed = dot(relativeVelocity, normal);
 
-        std::shared_ptr<sf::Vector2f> newVel1 = std::make_shared<sf::Vector2f>(*other.getAcceleration());
-        std::shared_ptr<sf::Vector2f> newVel2 = std::make_shared<sf::Vector2f>(*circle->getAcceleration());
+    // Calculate impulse magnitude
+    float impulseMagnitude = (1 + restitution) * relativeSpeed / (1 / circle1->getMass() + 1 / (circle2->getMass() * massRatio));
 
-        circle->accelerate(newVel1);
-        other.accelerate(newVel2);
-        if(!this->getGravityState())
-        {
-            other.randomizeColor();
-            circle->randomizeColor();
-        }
+    // Apply impulse to both circles
+    sf::Vector2f impulse = impulseMagnitude * normal;
+    circle1->applyImpulse(impulse);
+    circle2->applyImpulse(-impulse);
+
+    // Separate circles to avoid penetration
+    float overlap = circle1->getRadiusInMetersFromPixels() + circle2->getRadiusInMetersFromPixels() - distance;
+    sf::Vector2f separation = -0.5f * overlap * normal;
+    circle1->move(separation);
+    circle2->move(-separation);
+
+    if (!getGravityState()) {
+        circle1->randomizeColor();
+        circle2->randomizeColor();
     }
 }
 
+
 void PhysicsEngine::resolveTextIntersections(std::shared_ptr<MyCircle> circle, MyText& text)
 {
-    float bounciness = 0.08f;
-    sf::Vector2f circleCenter = *circle->getPositionInMetersFromPixels();
-    sf::Vector2f textPosition = text._text->getPosition() / Settings::getConversionFactor();
-    sf::FloatRect globalBounds = text._text->getGlobalBounds();
-    float globalWidth = globalBounds.width / Settings::getConversionFactor();
-    float globalHeight = globalBounds.height / Settings::getConversionFactor();
-
-    // Calculate the closest point on the rectangle to the circle
-    sf::Vector2f closestPoint;
-    closestPoint.x = std::max(textPosition.x - globalWidth / 2.0f,
-        std::min(circleCenter.x, textPosition.x + globalWidth / 2.0f));
-    closestPoint.y = std::max(textPosition.y - globalHeight / 2.0f,
-        std::min(circleCenter.y, textPosition.y + globalHeight / 2.0f));
-
-    // Calculate displacement between the circle's center and the closest point on the rectangle
-    sf::Vector2f displacement = circleCenter - closestPoint;
-    float distance = std::sqrt(displacement.x * displacement.x + displacement.y * displacement.y);
-
-    // Check if collision has occurred
-    if (distance < circle->getRadiusInMetersFromPixels())
-    {
-        // Calculate overlap and correction
-        float overlap = circle->getRadiusInMetersFromPixels() - distance;
-        sf::Vector2f correction = (displacement / distance) * overlap;
-
-        // Adjust circle's current and previous positions to resolve overlap
-        circleCenter += correction;  // Apply correction to current position
-        sf::Vector2f oldCircleCenter = *circle->getOldPos();
-
-        // Reflect the position based on bounciness
-        sf::Vector2f newCircleCenter = circleCenter + bounciness * (circleCenter - oldCircleCenter);
-
-        // Calculate acceleration (change in position)
-        sf::Vector2f acceleration = newCircleCenter - circleCenter;
-
-        // Set the new position for the circle using Verlet integration
-       std::shared_ptr<sf::Vector2f> newPos = std::make_shared<sf::Vector2f>(2.0f * newCircleCenter - circleCenter + acceleration);
-        circle->setPositionFromMetersToPixels(newPos);
-
-        // Store the current position as previous position for the next frame
-        circle->setOldPos(std::make_shared<sf::Vector2f>(circleCenter));
-    }
+    
 }
 void PhysicsEngine::toggleGravity()
 {
@@ -162,65 +129,35 @@ void PhysicsEngine::applyGravity(std::shared_ptr<MyCircle> circle, float subDt)
 }
 void PhysicsEngine::checkBounds(std::shared_ptr<MyCircle> circle, float timeStep)
 {
-    std::shared_ptr<sf::Vector2f> newPos = std::make_shared<sf::Vector2f>(*circle->getPositionInMetersFromPixels());
-
     // X bounds
-    if (newPos->x >= _width - circle->getRadiusInMetersFromPixels())
+    // Left
+    if (circle->getPositionInMetersFromPixels()->x < circle->getRadiusInMetersFromPixels()) 
     {
-        newPos->x = _width - circle->getRadiusInMetersFromPixels();
-
-        // Reflect y velocity and adjust position to create bounce effect
-        sf::Vector2f velocity = *circle->getPositionInMetersFromPixels() - *circle->getOldPos();
-        velocity.y = -velocity.y;
-        newPos->y -= 0.2f * (circle->getRadiusInMetersFromPixels() - (_width - newPos->x));
-
-        // Update old position and set new position
-        *circle->getOldPos() = *circle->getPositionInMetersFromPixels();
-        circle->setPositionFromMetersToPixels(newPos);
+        circle->setPositionFromMetersToPixels(circle->getRadiusInMetersFromPixels(), circle->getPositionInMetersFromPixels()->y);
+        circle->invertXVelocity();
     }
-    else if (newPos->x <= circle->getRadiusInMetersFromPixels())
+    // Right
+    else if (circle->getPositionInMetersFromPixels()->x > _width - circle->getRadiusInMetersFromPixels())
     {
-        newPos->x = circle->getRadiusInMetersFromPixels();
-
-        // Reflect y velocity and adjust position to create bounce effect
-        sf::Vector2f velocity = *circle->getPositionInMetersFromPixels() - *circle->getOldPos();
-        velocity.y = -velocity.y;
-        newPos->y -= 0.2f * (circle->getRadiusInMetersFromPixels() - newPos->x);
-
-        // Update old position and set new position
-        *circle->getOldPos() = *circle->getPositionInMetersFromPixels();
-        circle->setPositionFromMetersToPixels(newPos);
+        circle->setPositionFromMetersToPixels(_width - circle->getRadiusInMetersFromPixels(), circle->getPositionInMetersFromPixels()->y);
+        circle->invertXVelocity();
     }
 
     // Y bounds
-    if (newPos->y >= _height - circle->getRadiusInMetersFromPixels())
+    // Top (disabled on intro)
+    if (GameManager::isIntroFinished())
     {
-        newPos->y = _height - circle->getRadiusInMetersFromPixels();
-
-        // Reflect x velocity and adjust position to create bounce effect
-        sf::Vector2f velocity = *circle->getPositionInMetersFromPixels() - *circle->getOldPos();
-        velocity.x = -velocity.x;
-        newPos->x -= 0.2f * (circle->getRadiusInMetersFromPixels() - (_height - newPos->y));
-
-        // Update old position and set new position
-        *circle->getOldPos() = *circle->getPositionInMetersFromPixels();
-        circle->setPositionFromMetersToPixels(newPos);
-    }
-    else if (GameManager::getIntroState())
-    {
-        if (newPos->y <= circle->getRadiusInMetersFromPixels())
+        if (circle->getPositionInMetersFromPixels()->y < circle->getRadiusInMetersFromPixels())
         {
-            newPos->y = circle->getRadiusInMetersFromPixels();
-
-            // Reflect x velocity and adjust position to create bounce effect
-            sf::Vector2f velocity = *circle->getPositionInMetersFromPixels() - *circle->getOldPos();
-            velocity.x = -velocity.x;
-            newPos->x -= 0.2f * (circle->getRadiusInMetersFromPixels() - newPos->y);
-
-            // Update old position and set new position
-            *circle->getOldPos() = *circle->getPositionInMetersFromPixels();
-            circle->setPositionFromMetersToPixels(newPos);
+            circle->setPositionFromMetersToPixels(circle->getPositionInMetersFromPixels()->x, circle->getRadiusInMetersFromPixels() + 0.01f);
+            circle->invertYVelocity();
         }
+    }
+    // Bottom
+    if (circle->getPositionInMetersFromPixels()->y > _height - circle->getRadiusInMetersFromPixels())
+    {
+        circle->setPositionFromMetersToPixels(circle->getPositionInMetersFromPixels()->x, _height - circle->getRadiusInMetersFromPixels());
+        circle->invertYVelocity();
     }
 }
 
@@ -239,6 +176,5 @@ float PhysicsEngine::dot(const sf::Vector2f& vec1, const sf::Vector2f& vec2)
 }
 float PhysicsEngine::length(const sf::Vector2f& vector) 
 {
-    float conversionFactor = Settings::getConversionFactor();
-    return std::sqrt((vector.x * vector.x + vector.y * vector.y) * conversionFactor * conversionFactor);
+    return std::sqrt((vector.x * vector.x + vector.y * vector.y));
 }

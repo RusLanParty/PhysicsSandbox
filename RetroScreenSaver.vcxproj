@@ -24,6 +24,7 @@
     <ProjectGuid>{909d81f3-4a63-4fbe-83aa-7efeb879ea78}</ProjectGuid>
     <RootNamespace>RetroScreenSaver</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>PhysicsSandbox</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

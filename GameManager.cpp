@@ -3,10 +3,11 @@
 #include "FPSCounter.h"
 static bool introComplete = false;
 bool isMousePressed = false;
-float timeSinceLastSpawn = 0.3f;
-float spawnInterval = 0.3f;
+float timeSinceLastSpawn = 0.1f;
+float spawnInterval = 0.1f;
 uint32_t spwnCount = 0;
 int OBJCOUNT = 0;
+
 
 GameManager::GameManager(sf::RenderWindow* window, std::shared_ptr<sf::Font> font) :
     _window(window),
@@ -16,12 +17,21 @@ GameManager::GameManager(sf::RenderWindow* window, std::shared_ptr<sf::Font> fon
     _circs(),
     _texts()
 {
+    float offsetXPercent = 0.05f;
+    float offsetYPercent = 0.05f;
+
+    _width = _window->getSize().x / Settings::getConversionFactor();
+    _height = _window->getSize().y / Settings::getConversionFactor(); 
+
+    _offsetX = _width * offsetXPercent;
+    _offsetY = _height * offsetYPercent;
+    
     showIntro();
     std::cout << "game created" << "\n";
     run();    
 }
 
-bool GameManager::getIntroState()
+bool GameManager::isIntroFinished()
 {
     return introComplete;
 }
@@ -65,23 +75,27 @@ void GameManager::keyboardInput(float deltaTime, sf::Event event)
                     _circs.emplace_back(std::make_unique<MyCircle>());
                 }
             }
+            else if (event.key.code == sf::Keyboard::R)
+            {
+                for (auto& circPtr : _circs) 
+                {
+                    circPtr->randomizeVelocity();
+                    std::string state = "SHAKE";
+                    _texts.emplace_back(std::make_unique<MyText>(state, _width / 2, _height - 15 * _offsetY, *_font, _texts, sf::Color::Green, true));
+                }
+            }
             else if (event.key.code == sf::Keyboard::G)
             {
                 _physicsEngine.toggleGravity();
-                float width = _window->getSize().x;
-                float height = _window->getSize().y;
-
-                float offsetY = height * 0.05f;
-                float offsetX = width * 0.05f;
                 if (_physicsEngine.getGravityState())
                 {
                     std::string state = "GRAVITY ENABLED";
-                    _texts.emplace_back(std::make_unique<MyText>(state, width / 2, height - 15 * offsetY, *_font, _texts, sf::Color::Green, true));
+                    _texts.emplace_back(std::make_unique<MyText>(state, _width / 2, _height - 15 * _offsetY, *_font, _texts, sf::Color::Green, true));
                 }
                 else
                 {
                     std::string state = "GRAVITY DISABLED";
-                    _texts.emplace_back(std::make_unique<MyText>(state, width / 2, height - 15 * offsetY, *_font, _texts, sf::Color::Red, true));
+                    _texts.emplace_back(std::make_unique<MyText>(state, _width / 2, _height - 15 * _offsetY, *_font, _texts, sf::Color::Red, true));
                 }
             }
         }
@@ -150,7 +164,7 @@ void GameManager::update(float deltaTime)
             {
                 if (_circs[i]->isIntersect(*_circs[j]))
                 {
-                    _physicsEngine.resolveIntersections(_circs[i], *_circs[j]);
+                    _physicsEngine.resolveCollision(_circs[i], _circs[j]);
                 }
             }
 
@@ -208,36 +222,36 @@ void GameManager::showIntro()
 {
     const std::string& intr = "LEFT CLICK - SPAWN CIRCLES";
     const std::string& intr1 = "RIGHT CLICK - DESPAWN CIRCLES";
-    const std::string& intr2 = "SPACEBAR - TOGGLE GRAVITY";
+    const std::string& intr2 = "G - TOGGLE GRAVITY";
     const std::string& intr3 = "X - CLEAR WINDOW";
     const std::string& intr4 = "PHYSICS SANDBOX BY RUSLAN LIBIN (https://github.com/RusLanParty)";
-    float width = _window->getSize().x;
-    float height = _window->getSize().y;
-
-    float offsetXPercent = 0.05f;
-    float offsetYPercent = 0.05f; 
-
-    float offsetX = width * offsetXPercent;
-    float offsetY = height * offsetYPercent;
+    
 
     // Intro text
-    _texts.emplace_back(std::make_unique<MyText>(intr4, width / 2, height - 10 * offsetY, *_font, _texts, sf::Color::White));
-    _texts.emplace_back(std::make_unique<MyText>(intr, width / 2, height - 4 * offsetY, *_font, _texts));
-    _texts.emplace_back(std::make_unique<MyText>(intr1, width / 2, height - 3 * offsetY, *_font, _texts));
-    _texts.emplace_back(std::make_unique<MyText>(intr2, width / 2, height - 2 * offsetY, *_font, _texts));
-    _texts.emplace_back(std::make_unique<MyText>(intr3, width / 2, height - 1 * offsetY, *_font, _texts));
+    _texts.emplace_back(std::make_unique<MyText>(intr4, _width / 2, _height - 10 * _offsetY, *_font, _texts, sf::Color::White));
+    _texts.emplace_back(std::make_unique<MyText>(intr, _width / 2, _height - 4 * _offsetY, *_font, _texts));
+    _texts.emplace_back(std::make_unique<MyText>(intr1, _width / 2, _height - 3 * _offsetY, *_font, _texts));
+    _texts.emplace_back(std::make_unique<MyText>(intr2, _width / 2, _height - 2 * _offsetY, *_font, _texts));
+    _texts.emplace_back(std::make_unique<MyText>(intr3, _width / 2, _height - 1 * _offsetY, *_font, _texts));
 }
 
+bool GameManager::inBoundY()
+{
+    for (auto& circPtr : _circs)
+    {
+        if (circPtr->getPositionInMetersFromPixels()->y < circPtr->getRadiusInMetersFromPixels())
+        {
+            return false;
+        }
+    }
+    return true;
+}
 void GameManager::intro(float deltaTime)
 {
-        float width = _window->getSize().x;
-        float height = _window->getSize().y;
-
         // How many circles to spawn
-        uint32_t quantity = 50;
-
-        float offsetY = height * 0.05f;
-        float offsetX = width / quantity;
+        uint32_t quantity = 100;
+        float offsetY = _height * 0.05f;
+        float offsetX = _width / quantity;
 
         timeSinceLastSpawn += deltaTime;
 
@@ -247,42 +261,61 @@ void GameManager::intro(float deltaTime)
             if (spwnCount < quantity)
             {
                 sf::Vector2f top;
-                top.x = offsetX * spwnCount;
-                top.y = -offsetY / 2;
+                // For the first circle, spawn a bit further from the left edge
+                if (spwnCount == 0)
+                {
+                    top.x = offsetX * spwnCount + offsetX * Settings::getConversionFactor(); 
+                }
+                // For the last circle, spawn a bit further from the right edge
+                else if (spwnCount == quantity - 1)
+                {
+                    top.x = offsetX * spwnCount - offsetX * 0.55f * Settings::getConversionFactor(); 
+                }
+                else
+                {
+                    top.x = offsetX * spwnCount * Settings::getConversionFactor();
+                }
 
+                top.y = -offsetY * 2;
                 _circs.emplace_back(std::make_unique<MyCircle>(top));
                 timeSinceLastSpawn = 0.0f;
                 spwnCount++;
             }
             else
             {
-                for (auto& tPtr : _texts)
-                {
-                    tPtr->fadeOut();
-                }
-                spawnInterval = 0.07f;
-                timeSinceLastSpawn = 0.07f;
+               if (inBoundY())
+               {
+                   for (auto& tPtr : _texts)
+                   {    
+                   tPtr->fadeOut();   
+                   }
+                   spawnInterval = 0.07f;
+                   timeSinceLastSpawn = 0.07f;
+                   _physicsEngine.toggleGravity();
 
-                _physicsEngine.toggleGravity();
+                   introComplete = true;
 
-                float width = _window->getSize().x;
-                float height = _window->getSize().y;
+                   if (_physicsEngine.getGravityState())
+                   {
+                       std::string state = "GRAVITY ENABLED";
+                       _texts.emplace_back(std::make_unique<MyText>(state, _width / 2, _height - 15 * _offsetY, *_font, _texts, sf::Color::Green, true));
+                       for (auto& circPtr : _circs)
+                       {
+                           circPtr->randomizeColor();
+                       }
+                   }
+                   else
+                   {
+                       std::string state = "GRAVITY DISABLED";
+                       _texts.emplace_back(std::make_unique<MyText>(state, _width / 2, _height - 15 * _offsetY, *_font, _texts, sf::Color::Red, true));
+                       for (auto& circPtr : _circs) 
+                       {
+                           circPtr->randomizeColor();
+                       }
 
-                float offsetY = height * 0.05f;
-                float offsetX = width * 0.05f;
-
-                introComplete = true;
-
-                if (_physicsEngine.getGravityState())
-                {
-                    std::string state = "GRAVITY ENABLED";
-                    _texts.emplace_back(std::make_unique<MyText>(state, width / 2, height - 15 * offsetY, *_font, _texts, sf::Color::Green, true));
-                }
-                else
-                {
-                    std::string state = "GRAVITY DISABLED";
-                    _texts.emplace_back(std::make_unique<MyText>(state, width / 2, height - 15 * offsetY, *_font, _texts, sf::Color::Red, true));
-                }
+                   }
+               }
+                
             }
         }
 }
