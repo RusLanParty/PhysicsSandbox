@@ -10,8 +10,8 @@ FPSCounter::FPSCounter(float x, float y, float z, float w, sf::Font& font) :
 	_sat(0.0f),
 	_val(1.0f)
 {
-	_fpsText = std::make_unique<sf::Text>();
-	_objectsText = std::make_unique<sf::Text>();
+	_fpsText = std::make_shared<sf::Text>();
+	_objectsText = std::make_shared<sf::Text>();
 	_fpsText->setFont(font);
 	_objectsText->setFont(font);
 	_fpsText->setPosition(x, y);

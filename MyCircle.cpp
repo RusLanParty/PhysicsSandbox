@@ -1,10 +1,13 @@
 #include "MyCircle.h"
 #include "GameManager.h"
+static float SEQ_HUE = 0.0f;
 MyCircle::MyCircle():
 	_hue(0.0f),
 	_saturation(1.0f),
 	_value(0.0f)
 {
+	this->_hue = SEQ_HUE;
+	SEQ_HUE++;
 	_acceleration = std::make_unique<sf::Vector2f>(0.0f, 0.0f);
 	_velocity = std::make_unique<sf::Vector2f>(0.0f, 0.0f);
 	float rad = this->getRandomRad();
@@ -14,7 +17,7 @@ MyCircle::MyCircle():
 	std::shared_ptr<sf::Vector2f> curPos = std::make_shared<sf::Vector2f>(this->getRandomPos());
 	this->setPositionFromMetersToPixels(curPos);
 	this->initMass();
-	//std::cout << "Random METERS X= " << (float)this->getPositionInMetersFromPixels()->x << " Random METERS Y= " << (float)this->getPositionInMetersFromPixels()->y << " Random PIXELS X= " << (float)this->_circle->getPosition().x << " Random PIXELS Y= " << (float)this->_circle->getPosition().y << "\n";
+	
 }
 
 MyCircle::MyCircle(sf::Vector2f& pos):
@@ -23,6 +26,8 @@ MyCircle::MyCircle(sf::Vector2f& pos):
 	_value(0.0f)
 	
 {
+	this->_hue = SEQ_HUE;
+	SEQ_HUE++;
 	_acceleration = std::make_unique<sf::Vector2f>(0.0f, 0.0f);
 	_velocity = std::make_unique<sf::Vector2f>(0.0f, 0.0f);
 	float rad = this->getRandomRad();
@@ -35,7 +40,6 @@ MyCircle::MyCircle(sf::Vector2f& pos):
 	//this->randomizeVelocity();
 	//std::cout << "Mouse METERS X= " << (float)this->getPositionInMetersFromPixels()->x << " Mouse METERS Y= " << (float)this->getPositionInMetersFromPixels()->y << " Mouse PIXELS X= " << (float)this->_circle->getPosition().x << " Mouse PIXELS Y= " << (float)this->_circle->getPosition().y << "\n";
 }
-
 
 MyCircle::~MyCircle()
 {
@@ -226,7 +230,7 @@ float MyCircle::getRandomRad()
 {
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_real_distribution<float> dis(0.1f * Settings::getConversionFactor(), 0.2f * Settings::getConversionFactor());
+	std::uniform_real_distribution<float> dis(0.05f * Settings::getConversionFactor(), 0.15f * Settings::getConversionFactor());
 	float randRad = dis(gen);
 	return randRad;
 }
@@ -244,11 +248,10 @@ void MyCircle::randomizeVelocity()
 {
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_real_distribution<float> dis(0.00001f , 0.0001f);
+	std::uniform_real_distribution<float> dis(-500.0f / Settings::getConversionFactor(), 500.0f / Settings::getConversionFactor());
 	float velX = dis(gen);
 	float velY = dis(gen);
-	
-	std::shared_ptr<sf::Vector2f> newPos = std::make_shared<sf::Vector2f>(this->getPositionInMetersFromPixels()->x , this->getPositionInMetersFromPixels()->y + velY);
+	std::shared_ptr<sf::Vector2f> newPos = std::make_shared<sf::Vector2f>(velX , velY);
 	this->accelerate(newPos);
 }
 
@@ -259,6 +262,15 @@ void MyCircle::applyImpulse(const sf::Vector2f & impulse) {
 float MyCircle::calculateRestitution(float massRatio)
 {
 	float minRestitution = 0.2f;
-	float maxRestitution = 0.9f;
-	return minRestitution + (maxRestitution - minRestitution) * massRatio;
+	float maxRestitution = 0.7f;
+
+	if (massRatio < 1.0f) 
+	{
+		return minRestitution + (maxRestitution - minRestitution) * massRatio;
+	}
+	else if (massRatio > 1.0f) 
+	{
+		return minRestitution + (maxRestitution - minRestitution) / massRatio;
+	}
+	
 }

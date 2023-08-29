@@ -3,15 +3,15 @@
 #include "FPSCounter.h"
 static bool introComplete = false;
 bool isMousePressed = false;
-float timeSinceLastSpawn = 0.1f;
-float spawnInterval = 0.1f;
+float timeSinceLastSpawn = 0.01f;
+float spawnInterval = 0.01f;
 uint32_t spwnCount = 0;
 int OBJCOUNT = 0;
 
 
 GameManager::GameManager(sf::RenderWindow* window, std::shared_ptr<sf::Font> font) :
     _window(window),
-    _physicsEngine(),
+    Physics(),
     _font(font),
     _fpsCounter(0.0f, 0.0f, 100.0f, 0.0f, *font),
     _circs(),
@@ -27,7 +27,7 @@ GameManager::GameManager(sf::RenderWindow* window, std::shared_ptr<sf::Font> fon
     _offsetY = _height * offsetYPercent;
     
     showIntro();
-    std::cout << "game created" << "\n";
+    std::cout << "Main loop started" << "\n";
     run();    
 }
 
@@ -72,7 +72,7 @@ void GameManager::keyboardInput(float deltaTime, sf::Event event)
             {
                 for (int i = 0; i < 20; i++)
                 {
-                    _circs.emplace_back(std::make_unique<MyCircle>());
+                    _circs.emplace_back(std::make_shared<MyCircle>());
                 }
             }
             else if (event.key.code == sf::Keyboard::R)
@@ -81,21 +81,21 @@ void GameManager::keyboardInput(float deltaTime, sf::Event event)
                 {
                     circPtr->randomizeVelocity();
                     std::string state = "SHAKE";
-                    _texts.emplace_back(std::make_unique<MyText>(state, _width / 2, _height - 15 * _offsetY, *_font, _texts, sf::Color::Green, true));
+                    _texts.emplace_back(std::make_shared<MyText>(state, _width / 2, _height - 15 * _offsetY, *_font, _texts, sf::Color::Green, true));
                 }
             }
             else if (event.key.code == sf::Keyboard::G)
             {
-                _physicsEngine.toggleGravity();
-                if (_physicsEngine.getGravityState())
+                Physics.toggleGravity();
+                if (Physics.getGravityState())
                 {
                     std::string state = "GRAVITY ENABLED";
-                    _texts.emplace_back(std::make_unique<MyText>(state, _width / 2, _height - 15 * _offsetY, *_font, _texts, sf::Color::Green, true));
+                    _texts.emplace_back(std::make_shared<MyText>(state, _width / 2, _height - 15 * _offsetY, *_font, _texts, sf::Color::Green, true));
                 }
                 else
                 {
                     std::string state = "GRAVITY DISABLED";
-                    _texts.emplace_back(std::make_unique<MyText>(state, _width / 2, _height - 15 * _offsetY, *_font, _texts, sf::Color::Red, true));
+                    _texts.emplace_back(std::make_shared<MyText>(state, _width / 2, _height - 15 * _offsetY, *_font, _texts, sf::Color::Red, true));
                 }
             }
         }
@@ -120,7 +120,7 @@ void GameManager::mouseInput(float deltaTime, sf::Event event)
             if (timeSinceLastSpawn >= spawnInterval)
             {
                 sf::Vector2f mousePosF((float)sf::Mouse::getPosition().x, (float)sf::Mouse::getPosition().y);
-                _circs.emplace_back(std::make_unique<MyCircle>(mousePosF));
+                _circs.emplace_back(std::make_shared<MyCircle>(mousePosF));
                 timeSinceLastSpawn = 0.0f;
             }
         }
@@ -130,7 +130,7 @@ void GameManager::disposeTrash()
 {
     // Text
     auto iteratorToRemove = std::remove_if(_texts.begin(), _texts.end(),
-        [](std::unique_ptr<MyText>& textPtr) {
+        [](std::shared_ptr<MyText>& textPtr) {
             return textPtr->isSafeToRemove();
         });
 
@@ -158,13 +158,13 @@ void GameManager::update(float deltaTime)
     {
         for (size_t i = 0; i < _circs.size(); ++i)
         {
-            _physicsEngine.applyPhysics(_circs[i], deltaTime);
+            Physics.applyPhysics(_circs[i], deltaTime);
             _circs[i]->updateColor(deltaTime);
             for (size_t j = i + 1; j < _circs.size(); ++j)
             {
                 if (_circs[i]->isIntersect(*_circs[j]))
                 {
-                    _physicsEngine.resolveCollision(_circs[i], _circs[j]);
+                    Physics.resolveCollision(_circs[i], _circs[j]);
                 }
             }
 
@@ -175,7 +175,7 @@ void GameManager::update(float deltaTime)
                 {
                     if (textPtr->getCollisionsState() && textPtr->isIntersect(_circs[i]))
                     {
-                        _physicsEngine.resolveTextIntersections(_circs[i], *textPtr);
+                        Physics.resolveTextCollision(_circs[i], textPtr);
                     }
                 }
             }
@@ -194,7 +194,7 @@ void GameManager::update(float deltaTime)
 void GameManager::draw(float deltaTime)
 {
     _window->clear(sf::Color::Black);
-    _physicsEngine.drawBound(_window);
+    Physics.drawBound(_window);
     if (!_texts.empty())
     {
         for (auto& tPtr : _texts)
@@ -228,11 +228,11 @@ void GameManager::showIntro()
     
 
     // Intro text
-    _texts.emplace_back(std::make_unique<MyText>(intr4, _width / 2, _height - 10 * _offsetY, *_font, _texts, sf::Color::White));
-    _texts.emplace_back(std::make_unique<MyText>(intr, _width / 2, _height - 4 * _offsetY, *_font, _texts));
-    _texts.emplace_back(std::make_unique<MyText>(intr1, _width / 2, _height - 3 * _offsetY, *_font, _texts));
-    _texts.emplace_back(std::make_unique<MyText>(intr2, _width / 2, _height - 2 * _offsetY, *_font, _texts));
-    _texts.emplace_back(std::make_unique<MyText>(intr3, _width / 2, _height - 1 * _offsetY, *_font, _texts));
+    _texts.emplace_back(std::make_shared<MyText>(intr4, _width / 2, _height - 10 * _offsetY, *_font, _texts, sf::Color::White));
+    _texts.emplace_back(std::make_shared<MyText>(intr, _width / 2, _height - 4 * _offsetY, *_font, _texts));
+    _texts.emplace_back(std::make_shared<MyText>(intr1, _width / 2, _height - 3 * _offsetY, *_font, _texts));
+    _texts.emplace_back(std::make_shared<MyText>(intr2, _width / 2, _height - 2 * _offsetY, *_font, _texts));
+    _texts.emplace_back(std::make_shared<MyText>(intr3, _width / 2, _height - 1 * _offsetY, *_font, _texts));
 }
 
 bool GameManager::inBoundY()
@@ -249,8 +249,9 @@ bool GameManager::inBoundY()
 void GameManager::intro(float deltaTime)
 {
         // How many circles to spawn
-        uint32_t quantity = 100;
-        float offsetY = _height * 0.05f;
+        uint32_t quantity = 300;
+
+        float offsetY = _height * 0.5f;
         float offsetX = _width / quantity;
 
         timeSinceLastSpawn += deltaTime;
@@ -276,8 +277,8 @@ void GameManager::intro(float deltaTime)
                     top.x = offsetX * spwnCount * Settings::getConversionFactor();
                 }
 
-                top.y = -offsetY * 2;
-                _circs.emplace_back(std::make_unique<MyCircle>(top));
+                top.y = -offsetY * 100;
+                _circs.emplace_back(std::make_shared<MyCircle>(top));
                 timeSinceLastSpawn = 0.0f;
                 spwnCount++;
             }
@@ -289,16 +290,16 @@ void GameManager::intro(float deltaTime)
                    {    
                    tPtr->fadeOut();   
                    }
-                   spawnInterval = 0.07f;
-                   timeSinceLastSpawn = 0.07f;
-                   _physicsEngine.toggleGravity();
+                   spawnInterval = 0.02f;
+                   timeSinceLastSpawn = 0.02f;
+                   Physics.toggleGravity();
 
                    introComplete = true;
 
-                   if (_physicsEngine.getGravityState())
+                   if (Physics.getGravityState())
                    {
                        std::string state = "GRAVITY ENABLED";
-                       _texts.emplace_back(std::make_unique<MyText>(state, _width / 2, _height - 15 * _offsetY, *_font, _texts, sf::Color::Green, true));
+                       _texts.emplace_back(std::make_shared<MyText>(state, _width / 2, _height - 15 * _offsetY, *_font, _texts, sf::Color::Green, true));
                        for (auto& circPtr : _circs)
                        {
                            circPtr->randomizeColor();
@@ -307,7 +308,7 @@ void GameManager::intro(float deltaTime)
                    else
                    {
                        std::string state = "GRAVITY DISABLED";
-                       _texts.emplace_back(std::make_unique<MyText>(state, _width / 2, _height - 15 * _offsetY, *_font, _texts, sf::Color::Red, true));
+                       _texts.emplace_back(std::make_shared<MyText>(state, _width / 2, _height - 15 * _offsetY, *_font, _texts, sf::Color::Red, true));
                        for (auto& circPtr : _circs) 
                        {
                            circPtr->randomizeColor();

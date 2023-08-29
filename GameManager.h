@@ -14,19 +14,18 @@ public:
 	static bool isIntroFinished();
 	static int getObjectCount();
 private:
+	sf::RenderWindow* _window;
+	PhysicsEngine Physics;
+	FPSCounter _fpsCounter;
+	std::shared_ptr<sf::Font> _font;
+	sf::Clock _clock;
+	sf::Time _dt;
+	std::vector<std::shared_ptr<MyCircle>> _circs;
+	std::vector<std::shared_ptr<MyText>> _texts;
 	float _offsetX;
 	float _offsetY;
 	float _width;
 	float _height;
-	PhysicsEngine _physicsEngine;
-    std::shared_ptr<sf::Font> _font;
-	FPSCounter _fpsCounter;
-	sf::RenderWindow* _window;
-	std::vector<std::shared_ptr<MyCircle>> _circs;
-	std::vector<std::unique_ptr<MyText>> _texts;
-	//std::vector<std::unique_ptr<MyText>> _trash;
-	sf::Clock _clock;
-	sf::Time _dt;
 	void handleInput(float deltaTime);
 	void intro(float deltaTime);
 	void update(float dt);

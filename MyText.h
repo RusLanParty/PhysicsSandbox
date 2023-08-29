@@ -7,10 +7,10 @@
 class MyText 
 {
 public:
-	std::unique_ptr<sf::Text> _text;
-	MyText(const std::string& text, float x, float y, sf::Font& font, std::vector<std::unique_ptr<MyText>>& texts);
-	MyText(const std::string& text, float x, float y, sf::Font& font, std::vector<std::unique_ptr<MyText>>& texts, sf::Color color);
-	MyText(const std::string& text, float x, float y, sf::Font& font, std::vector<std::unique_ptr<MyText>>& texts, sf::Color color, bool instantFade);
+	std::shared_ptr<sf::Text> _text;
+	MyText(const std::string& text, float x, float y, sf::Font& font, std::vector<std::shared_ptr<MyText>>& texts);
+	MyText(const std::string& text, float x, float y, sf::Font& font, std::vector<std::shared_ptr<MyText>>& texts, sf::Color color);
+	MyText(const std::string& text, float x, float y, sf::Font& font, std::vector<std::shared_ptr<MyText>>& texts, sf::Color color, bool instantFade);
 	~MyText();
 	void updateText(float deltaTime);
 	void fadeIn();
@@ -18,6 +18,8 @@ public:
 	bool isSafeToRemove();
 	bool getCollisionsState() const;
 	bool isIntersect(std::shared_ptr<MyCircle> circle) const;
+	void setColor(sf::Color color);
+	void quickFlash();
 	
 private:
 	static bool BLOCKSPAWN;
@@ -27,12 +29,13 @@ private:
 	static float SEQ_HUE;
 	static float getRandomHue();
 	bool _instantFade;
+	bool _flashActive;
 	bool _collision;
 	bool _rdyForRemove;
 	static std::deque<MyText*> _fadeInQ;
 	static std::deque<MyText*> _fadeOutQ;
 	int _id;
-	std::vector<std::unique_ptr<MyText>>* _texts;
+	std::vector<std::shared_ptr<MyText>>* _texts;
 	bool _colorTransition;
 	int _alpha;
 	float _hue;

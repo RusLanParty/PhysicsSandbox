@@ -34,25 +34,25 @@ void PhysicsEngine::applyPhysics(std::shared_ptr<MyCircle> circle, float deltaTi
     const uint32_t sub_step = 8;
     float sub_dt = deltaTime / (float)sub_step;
 
-    // Updating (sub_step) times between each frame to increase precision
+    // Updating (sub_step) times between each frame to increase stability
     for (int i = 0; i < sub_step - 1; i++)
     {
         // Performing leapfrog integration
 
-        // Current position + velocity
-        updatePosition(circle, sub_dt);
+            // Current position + velocity
+            updatePosition(circle, sub_dt);
         
-        // Applying all forces and accumulating acceleration
-        if (_gravity)
-        {
-            applyGravity(circle, sub_dt);
-        }
+            // Applying all forces and accumulating acceleration
+            if (_gravity)
+            {
+                applyGravity(circle, sub_dt);
+            }
 
-        // Current velocity + acceleration accumulated in the frame
-        updateVelocity(circle, sub_dt);
+            // Current velocity + acceleration accumulated in the frame
+            updateVelocity(circle, sub_dt);
 
-        // Checking bounds and handling collisions with them
-        checkBounds(circle, sub_dt);
+            // Checking bounds and handling collisions with them
+            checkBounds(circle, sub_dt);
     }
 }
 void PhysicsEngine::updatePosition(std::shared_ptr<MyCircle> circle, float deltaTime)
@@ -107,11 +107,40 @@ void PhysicsEngine::resolveCollision(std::shared_ptr<MyCircle> circle1, std::sha
     }
 }
 
-
-void PhysicsEngine::resolveTextIntersections(std::shared_ptr<MyCircle> circle, MyText& text)
+void PhysicsEngine::resolveTextCollision(std::shared_ptr<MyCircle> circle, std::shared_ptr<MyText> text)
 {
-    
+    sf::Vector2f circlePosition = *circle->getPositionInMetersFromPixels();
+    float circleRadius = circle->getRadiusInMetersFromPixels();
+
+    sf::Vector2f textPosition = text->_text->getPosition() / Settings::getConversionFactor();
+    sf::Vector2f textSize = sf::Vector2f(text->_text->getGlobalBounds().width / Settings::getConversionFactor(), text->_text->getGlobalBounds().height / Settings::getConversionFactor());
+
+    // Calculate the corners of the text's bounding box
+    sf::Vector2f textTopLeft = textPosition - textSize * 0.5f;
+    sf::Vector2f textBottomRight = textPosition + textSize * 0.5f;
+
+    // Calculate the closest point within the text's bounding box to the circle center
+    float closestX = std::clamp(circlePosition.x, textTopLeft.x, textBottomRight.x);
+    float closestY = std::clamp(circlePosition.y, textTopLeft.y, textBottomRight.y);
+
+    // Calculate the normal vector from the collision point to the circle center
+    sf::Vector2f collisionNormal = circlePosition - sf::Vector2f(closestX, closestY);
+    float collisionNormalLength = std::sqrt(collisionNormal.x * collisionNormal.x + collisionNormal.y * collisionNormal.y);
+    collisionNormal /= collisionNormalLength;
+
+    // Calculate the reflection of the circle's velocity
+    sf::Vector2f circleVelocity = *circle->getVelocity();
+    sf::Vector2f reflectionVelocity = circleVelocity - 2.1f * dot(circleVelocity, collisionNormal) * collisionNormal;
+
+    // Apply the reflected velocity to the circle
+    circle->setVelocity(std::make_shared<sf::Vector2f>(reflectionVelocity));
+
+    // Apply VFX to text
+    //text->quickFlash();
+    text->setColor(circle->_circle->getFillColor());
 }
+
+
 void PhysicsEngine::toggleGravity()
 {
     this->_gravity = !_gravity;

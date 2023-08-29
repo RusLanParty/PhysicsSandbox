@@ -9,8 +9,8 @@ public:
 	void displayFps(float deltaTime);
 	void displayOjbectCount();
 private:
-	std::unique_ptr<sf::Text> _fpsText;
-	std::unique_ptr<sf::Text> _objectsText;
+	std::shared_ptr<sf::Text> _fpsText;
+	std::shared_ptr<sf::Text> _objectsText;
 	sf::Clock _clock;
 	int _frameCounter;
 	float _deltaFrames;

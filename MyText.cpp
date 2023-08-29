@@ -8,7 +8,8 @@ float MyText::SEQ_HUE = getRandomHue();
 std::deque<MyText*>MyText::_fadeInQ;
 std::deque<MyText*>MyText::_fadeOutQ;
 
-MyText::MyText(const std::string& text, float x, float y, sf::Font& font, std::vector<std::unique_ptr<MyText>>& texts) :
+MyText::MyText(const std::string& text, float x, float y, sf::Font& font, std::vector<std::shared_ptr<MyText>>& texts) :
+	_flashActive(false),
 	_texts(&texts),
 	_rdyForRemove(false),
 	_colorTransition(true),
@@ -20,7 +21,7 @@ MyText::MyText(const std::string& text, float x, float y, sf::Font& font, std::v
 	_collision(false),
 	_instantFade(false)
 {
-	_text = std::make_unique<sf::Text>();
+	_text = std::make_shared<sf::Text>();
 	COUNT++;
 	sf::Vector2f position(x * Settings::getConversionFactor(), y * Settings::getConversionFactor());
 	_text->setFont(font);
@@ -36,7 +37,8 @@ MyText::MyText(const std::string& text, float x, float y, sf::Font& font, std::v
 	this->fadeIn();
 }
 
-MyText::MyText(const std::string& text, float x, float y, sf::Font& font, std::vector<std::unique_ptr<MyText>>& texts, sf::Color color) :
+MyText::MyText(const std::string& text, float x, float y, sf::Font& font, std::vector<std::shared_ptr<MyText>>& texts, sf::Color color) :
+	_flashActive(false),
 	_texts(&texts),
 	_rdyForRemove(false),
 	_colorTransition(false),
@@ -48,7 +50,7 @@ MyText::MyText(const std::string& text, float x, float y, sf::Font& font, std::v
 	_collision(true),
 	_instantFade(false)
 {
-	_text = std::make_unique<sf::Text>();
+	_text = std::make_shared<sf::Text>();
 	COUNT++;
 	sf::Vector2f position(x * Settings::getConversionFactor(), y * Settings::getConversionFactor());
 	_text->setString(text);
@@ -65,7 +67,8 @@ MyText::MyText(const std::string& text, float x, float y, sf::Font& font, std::v
 	_text->setPosition(position);
 	this->fadeIn();
 }
-MyText::MyText(const std::string& text, float x, float y, sf::Font& font, std::vector<std::unique_ptr<MyText>>& texts, sf::Color color, bool instantFade) :
+MyText::MyText(const std::string& text, float x, float y, sf::Font& font, std::vector<std::shared_ptr<MyText>>& texts, sf::Color color, bool instantFade) :
+	_flashActive(false),
 	_texts(&texts),
 	_rdyForRemove(false),
 	_colorTransition(false),
@@ -88,7 +91,7 @@ MyText::MyText(const std::string& text, float x, float y, sf::Font& font, std::v
 			}
 		}
 	}
-	_text = std::make_unique<sf::Text>();
+	_text = std::make_shared<sf::Text>();
 	COUNT++;
 	sf::Vector2f position(x * Settings::getConversionFactor(), y * Settings::getConversionFactor());
 	this->_text->setFont(font);
@@ -118,7 +121,6 @@ void MyText::updateText(float deltaTime)
 	{
 		this->updateColor(deltaTime);
 	}
-	
 }
 
 
@@ -200,6 +202,18 @@ void MyText::updateNoColor(float deltaTime)
 				_fadeOutQ.pop_back();
 				this->_rdyForRemove = true;
 			}
+		}
+	}
+	else if(_flashActive)
+	{
+		if (this->_value < 1.0f) 
+		{
+			this->_value += 0.05f;
+		}
+		else 
+		{
+			this->_value = 1.0f;			
+			this->_flashActive = false;
 		}
 	}
 	//Normalize the color before setting
@@ -315,14 +329,22 @@ bool MyText::isIntersect(std::shared_ptr<MyCircle> circle) const {
 	// Intersection occurs if the distance is less than or equal to the circle radius squared
 	return distanceSquared <= (circleRadius * circleRadius);
 }
+void MyText::setColor(sf::Color color)
+{
+	sf::Color newCol = RGBtoHSV(color);
+	this->_hue = newCol.r;
+	this->_saturation = newCol.g;
+	this->_value = newCol.b;
+}
+void MyText::quickFlash()
+{
+	this->_value = 0.15f;	
+	this->_flashActive = true;
+}
 void MyText::normalize() 
 {
 	// Hue
-	if (this->_hue < 0.0f)
-	{
-		this->_hue += 360.0f;
-	}
-	else if (this->_hue > 360.0f)
+	if (this->_hue >= 360.0f)
 	{
 		this->_hue -= 360.0f;
 	}
