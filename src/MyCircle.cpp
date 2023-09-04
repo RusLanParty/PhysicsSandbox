@@ -110,7 +110,8 @@ bool MyCircle::isIntersect(const MyCircle& c2) const
 {
 	sf::Vector2f delta = *c2.getPositionInMetersFromPixels() - *this->getPositionInMetersFromPixels();
 	float distanceSquared = delta.x * delta.x + delta.y * delta.y;
-	float radiiSumSquared = (this->getRadiusInMetersFromPixels() + c2.getRadiusInMetersFromPixels()) * (this->getRadiusInMetersFromPixels() + c2.getRadiusInMetersFromPixels());
+	float radiiSumSquared = (this->getRadiusInMetersFromPixels() + c2.getRadiusInMetersFromPixels());
+	radiiSumSquared *= radiiSumSquared;
 
 	if (distanceSquared < radiiSumSquared)
 	{

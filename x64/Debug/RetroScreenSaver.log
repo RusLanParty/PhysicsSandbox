@@ -1,58 +1,47 @@
 ﻿D:\Visual Studio\IDE\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(531,5): warning MSB8028: The intermediate directory (x64\Debug\) contains files shared from another project (RetroScreenSaver.vcxproj).  This can lead to incorrect clean and rebuild behavior.
-  Scanning sources for module dependencies...
   FPSCounter.cpp
-D:\Visual Studio\Repos\RetroScreenSaver\FPSCounter.cpp(21,31): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-D:\Visual Studio\Repos\RetroScreenSaver\FPSCounter.cpp(35,11): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-D:\Visual Studio\Repos\RetroScreenSaver\FPSCounter.cpp(37,15): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-D:\Visual Studio\Repos\RetroScreenSaver\FPSCounter.cpp(62,27): warning C4244: '-=': conversion from 'float' to 'int', possible loss of data
-D:\Visual Studio\Repos\RetroScreenSaver\FPSCounter.cpp(65,35): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-D:\Visual Studio\Repos\RetroScreenSaver\FPSCounter.cpp(72,27): warning C4244: '-=': conversion from 'float' to 'int', possible loss of data
-D:\Visual Studio\Repos\RetroScreenSaver\FPSCounter.cpp(76,27): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
-D:\Visual Studio\Repos\RetroScreenSaver\FPSCounter.cpp(79,35): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-D:\Visual Studio\Repos\RetroScreenSaver\FPSCounter.cpp(86,27): warning C4244: '-=': conversion from 'float' to 'int', possible loss of data
-D:\Visual Studio\Repos\RetroScreenSaver\FPSCounter.cpp(90,27): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
-D:\Visual Studio\Repos\RetroScreenSaver\FPSCounter.cpp(93,35): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-D:\Visual Studio\Repos\RetroScreenSaver\FPSCounter.cpp(100,27): warning C4244: '-=': conversion from 'float' to 'int', possible loss of data
-D:\Visual Studio\Repos\RetroScreenSaver\FPSCounter.cpp(104,27): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
-D:\Visual Studio\Repos\RetroScreenSaver\FPSCounter.cpp(107,35): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+D:\Visual Studio\Repos\PhysicsSandbox\src\FPSCounter.cpp(21,31): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+D:\Visual Studio\Repos\PhysicsSandbox\src\FPSCounter.cpp(35,11): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+D:\Visual Studio\Repos\PhysicsSandbox\src\FPSCounter.cpp(37,15): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+D:\Visual Studio\Repos\PhysicsSandbox\src\FPSCounter.cpp(62,27): warning C4244: '-=': conversion from 'float' to 'int', possible loss of data
+D:\Visual Studio\Repos\PhysicsSandbox\src\FPSCounter.cpp(65,35): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+D:\Visual Studio\Repos\PhysicsSandbox\src\FPSCounter.cpp(72,27): warning C4244: '-=': conversion from 'float' to 'int', possible loss of data
+D:\Visual Studio\Repos\PhysicsSandbox\src\FPSCounter.cpp(76,27): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+D:\Visual Studio\Repos\PhysicsSandbox\src\FPSCounter.cpp(79,35): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+D:\Visual Studio\Repos\PhysicsSandbox\src\FPSCounter.cpp(86,27): warning C4244: '-=': conversion from 'float' to 'int', possible loss of data
+D:\Visual Studio\Repos\PhysicsSandbox\src\FPSCounter.cpp(90,27): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+D:\Visual Studio\Repos\PhysicsSandbox\src\FPSCounter.cpp(93,35): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+D:\Visual Studio\Repos\PhysicsSandbox\src\FPSCounter.cpp(100,27): warning C4244: '-=': conversion from 'float' to 'int', possible loss of data
+D:\Visual Studio\Repos\PhysicsSandbox\src\FPSCounter.cpp(104,27): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+D:\Visual Studio\Repos\PhysicsSandbox\src\FPSCounter.cpp(107,35): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
   GameManager.cpp
-D:\Visual Studio\Repos\RetroScreenSaver\GameManager.cpp(156,27): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-D:\Visual Studio\IDE\VC\Tools\MSVC\14.37.32822\include\xmemory(2213,18): error C2664: 'bool GameManager::disposeTrash::<lambda_1>::operator ()(std::unique_ptr<MyText,std::default_delete<MyText>> &) const': cannot convert argument 1 from 'std::shared_ptr<MyText>' to 'std::unique_ptr<MyText,std::default_delete<MyText>> &'
-D:\Visual Studio\Repos\RetroScreenSaver\GameManager.cpp(133,46): message : see declaration of 'GameManager::disposeTrash::<lambda_1>::operator ()'
-D:\Visual Studio\IDE\VC\Tools\MSVC\14.37.32822\include\xmemory(2213,18): message : while trying to match the argument list '(std::shared_ptr<MyText>)'
-D:\Visual Studio\Repos\RetroScreenSaver\GameManager.cpp(132,34): message : see reference to function template instantiation '_FwdIt std::remove_if<std::_Vector_iterator<std::_Vector_val<std::_Simple_types<_Ty>>>,GameManager::disposeTrash::<lambda_1>>(_FwdIt,const _FwdIt,_Pr)' being compiled
+D:\Visual Studio\Repos\PhysicsSandbox\src\GameManager.cpp(40,17): warning C4244: 'initializing': conversion from 'T' to 'float', possible loss of data
           with
           [
-              _FwdIt=std::_Vector_iterator<std::_Vector_val<std::_Simple_types<std::shared_ptr<MyText>>>>,
-              _Ty=std::shared_ptr<MyText>,
-              _Pr=GameManager::disposeTrash::<lambda_1>
+              T=unsigned int
           ]
+D:\Visual Studio\Repos\PhysicsSandbox\src\GameManager.cpp(41,18): warning C4244: 'initializing': conversion from 'T' to 'float', possible loss of data
+          with
+          [
+              T=unsigned int
+          ]
+D:\Visual Studio\Repos\PhysicsSandbox\src\GameManager.cpp(215,27): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
   main.cpp
-D:\Visual Studio\Repos\RetroScreenSaver\main.cpp(1,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-D:\Visual Studio\Repos\RetroScreenSaver\main.cpp(2,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-D:\Visual Studio\Repos\RetroScreenSaver\main.cpp(3,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\PhysicsSandbox\src\main.cpp(1,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\PhysicsSandbox\src\main.cpp(2,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\Visual Studio\Repos\PhysicsSandbox\src\main.cpp(3,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
   MyCircle.cpp
-D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.cpp(160,11): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.cpp(161,11): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-D:\Visual Studio\Repos\RetroScreenSaver\MyCircle.cpp(238,18): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+D:\Visual Studio\Repos\PhysicsSandbox\src\MyCircle.cpp(165,11): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+D:\Visual Studio\Repos\PhysicsSandbox\src\MyCircle.cpp(166,11): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+D:\Visual Studio\Repos\PhysicsSandbox\src\MyCircle.cpp(243,18): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
   MyText.cpp
-D:\Visual Studio\Repos\RetroScreenSaver\MyText.cpp(12,8): error C2440: 'initializing': cannot convert from 'std::vector<std::unique_ptr<MyText,std::default_delete<MyText>>,std::allocator<std::unique_ptr<MyText,std::default_delete<MyText>>>> *' to 'std::vector<std::shared_ptr<MyText>,std::allocator<std::shared_ptr<MyText>>> *'
-D:\Visual Studio\Repos\RetroScreenSaver\MyText.cpp(12,8): message : Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or parenthesized function-style cast
-D:\Visual Studio\Repos\RetroScreenSaver\MyText.cpp(22,1): error C2439: 'MyText::_texts': member could not be initialized
-D:\Visual Studio\Repos\RetroScreenSaver\MyText.h(35,40): message : see declaration of 'MyText::_texts'
-D:\Visual Studio\Repos\RetroScreenSaver\MyText.cpp(40,8): error C2440: 'initializing': cannot convert from 'std::vector<std::unique_ptr<MyText,std::default_delete<MyText>>,std::allocator<std::unique_ptr<MyText,std::default_delete<MyText>>>> *' to 'std::vector<std::shared_ptr<MyText>,std::allocator<std::shared_ptr<MyText>>> *'
-D:\Visual Studio\Repos\RetroScreenSaver\MyText.cpp(40,8): message : Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or parenthesized function-style cast
-D:\Visual Studio\Repos\RetroScreenSaver\MyText.cpp(50,1): error C2439: 'MyText::_texts': member could not be initialized
-D:\Visual Studio\Repos\RetroScreenSaver\MyText.h(35,40): message : see declaration of 'MyText::_texts'
-D:\Visual Studio\Repos\RetroScreenSaver\MyText.cpp(69,8): error C2440: 'initializing': cannot convert from 'std::vector<std::unique_ptr<MyText,std::default_delete<MyText>>,std::allocator<std::unique_ptr<MyText,std::default_delete<MyText>>>> *' to 'std::vector<std::shared_ptr<MyText>,std::allocator<std::shared_ptr<MyText>>> *'
-D:\Visual Studio\Repos\RetroScreenSaver\MyText.cpp(69,8): message : Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or parenthesized function-style cast
-D:\Visual Studio\Repos\RetroScreenSaver\MyText.cpp(79,1): error C2439: 'MyText::_texts': member could not be initialized
-D:\Visual Studio\Repos\RetroScreenSaver\MyText.h(35,40): message : see declaration of 'MyText::_texts'
-D:\Visual Studio\Repos\RetroScreenSaver\MyText.cpp(169,12): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-D:\Visual Studio\Repos\RetroScreenSaver\MyText.cpp(284,18): warning C4244: '=': conversion from 'float' to 'sf::Uint8', possible loss of data
-D:\Visual Studio\Repos\RetroScreenSaver\MyText.cpp(285,18): warning C4244: '=': conversion from 'float' to 'sf::Uint8', possible loss of data
-D:\Visual Studio\Repos\RetroScreenSaver\MyText.cpp(286,18): warning C4244: '=': conversion from 'float' to 'sf::Uint8', possible loss of data
-D:\Visual Studio\Repos\RetroScreenSaver\MyText.cpp(287,33): warning C4244: '=': conversion from 'float' to 'sf::Uint8', possible loss of data
+D:\Visual Studio\Repos\PhysicsSandbox\src\MyText.cpp(171,12): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+D:\Visual Studio\Repos\PhysicsSandbox\src\MyText.cpp(298,18): warning C4244: '=': conversion from 'float' to 'sf::Uint8', possible loss of data
+D:\Visual Studio\Repos\PhysicsSandbox\src\MyText.cpp(299,18): warning C4244: '=': conversion from 'float' to 'sf::Uint8', possible loss of data
+D:\Visual Studio\Repos\PhysicsSandbox\src\MyText.cpp(300,18): warning C4244: '=': conversion from 'float' to 'sf::Uint8', possible loss of data
+D:\Visual Studio\Repos\PhysicsSandbox\src\MyText.cpp(301,33): warning C4244: '=': conversion from 'float' to 'sf::Uint8', possible loss of data
   PhysicsEngine.cpp
   Settings.cpp
   Generating Code...
+D:\Visual Studio\Repos\PhysicsSandbox\src\MyCircle.cpp(277): warning C4715: 'MyCircle::calculateRestitution': not all control paths return a value
+  RetroScreenSaver.vcxproj -> D:\Visual Studio\Repos\PhysicsSandbox\x64\Debug\PhysicsSandbox.exe

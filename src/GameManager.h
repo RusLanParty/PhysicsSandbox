@@ -14,7 +14,12 @@ public:
 	static bool isIntroFinished();
 	static int getObjectCount();
 private:
+	sf::RenderTexture renderTexture;
+	sf::Shader xBlurShader;
+	sf::Shader yBlurShader;
 	sf::RenderWindow* _window;
+	sf::View view;
+	float maxZoom;	
 	PhysicsEngine Physics;
 	FPSCounter _fpsCounter;
 	std::shared_ptr<sf::Font> _font;
@@ -36,5 +41,6 @@ private:
 	void disposeTrash();
 	void showIntro();
 	bool inBoundY();
+	void spawnCircs(float deltaTime);
 	
 };

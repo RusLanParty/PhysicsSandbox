@@ -2,7 +2,7 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>D:\Visual Studio\Repos\RetroScreenSaver\x64\Debug\PhysicsSandbox.exe</FullPath>
+      <FullPath>D:\Visual Studio\Repos\PhysicsSandbox\x64\Debug\PhysicsSandbox.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles />

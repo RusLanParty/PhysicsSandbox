@@ -66,7 +66,7 @@ void PhysicsEngine::drawBound(sf::RenderWindow* window)
 }
 void PhysicsEngine::updateVelocity(std::shared_ptr<MyCircle> circle, float deltaTime)
 {
-    std::shared_ptr<sf::Vector2f> newVel = std::make_shared<sf::Vector2f>(*circle->getVelocity() + (*circle->getAcceleration() * deltaTime));
+    std::shared_ptr<sf::Vector2f> newVel =std::make_shared<sf::Vector2f>(*circle->getVelocity() + (*circle->getAcceleration() * deltaTime));
     circle->setVelocity(newVel);
     circle->resetAcceleration();
 }

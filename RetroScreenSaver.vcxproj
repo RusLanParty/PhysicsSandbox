@@ -136,25 +136,29 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="FPSCounter.cpp" />
-    <ClCompile Include="GameManager.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="MyCircle.cpp" />
-    <ClCompile Include="MyCircle.h" />
-    <ClCompile Include="MyText.cpp" />
-    <ClCompile Include="PhysicsEngine.cpp" />
-    <ClCompile Include="Settings.cpp" />
+    <ClCompile Include="src\FPSCounter.cpp" />
+    <ClCompile Include="src\GameManager.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\MyCircle.cpp" />
+    <ClCompile Include="src\MyText.cpp" />
+    <ClCompile Include="src\PhysicsEngine.cpp" />
+    <ClCompile Include="src\Settings.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="arial.ttf" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="FPSCounter.h" />
-    <ClInclude Include="GameManager.h" />
-    <ClInclude Include="MyObject.h" />
-    <ClInclude Include="MyText.h" />
-    <ClInclude Include="PhysicsEngine.h" />
-    <ClInclude Include="Settings.h" />
+    <ClInclude Include="..\Project21\src\Settings.h" />
+    <ClInclude Include="src\FPSCounter.h" />
+    <ClInclude Include="src\GameManager.h" />
+    <ClInclude Include="src\MyCircle.h" />
+    <ClInclude Include="src\MyObject.h" />
+    <ClInclude Include="src\MyText.h" />
+    <ClInclude Include="src\PhysicsEngine.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\BloomX.frag" />
+    <None Include="src\BloomY.frag" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
