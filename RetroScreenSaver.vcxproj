@@ -143,9 +143,7 @@
     <ClCompile Include="src\MyText.cpp" />
     <ClCompile Include="src\PhysicsEngine.cpp" />
     <ClCompile Include="src\Settings.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <Font Include="arial.ttf" />
+    <ClCompile Include="src\Shaders.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Project21\src\Settings.h" />
@@ -155,10 +153,15 @@
     <ClInclude Include="src\MyObject.h" />
     <ClInclude Include="src\MyText.h" />
     <ClInclude Include="src\PhysicsEngine.h" />
+    <ClInclude Include="src\Shaders.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\BloomX.frag" />
-    <None Include="src\BloomY.frag" />
+    <None Include="Shaders\Add.frag" />
+    <None Include="Shaders\BloomX.frag" />
+    <None Include="Shaders\BloomY.frag" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="Fonts\arial.ttf" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

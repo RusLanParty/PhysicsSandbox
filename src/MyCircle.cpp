@@ -5,9 +5,9 @@ MyCircle::MyCircle():
 	_hue(0.0f),
 	_saturation(1.0f),
 	_value(0.0f)
-{
+{	
 	this->_hue = SEQ_HUE;
-	SEQ_HUE++;
+	SEQ_HUE = SEQ_HUE + 1.5f;
 	_acceleration = std::make_unique<sf::Vector2f>(0.0f, 0.0f);
 	_velocity = std::make_unique<sf::Vector2f>(0.0f, 0.0f);
 	float rad = this->getRandomRad();
@@ -17,7 +17,7 @@ MyCircle::MyCircle():
 	std::shared_ptr<sf::Vector2f> curPos = std::make_shared<sf::Vector2f>(this->getRandomPos());
 	this->setPositionFromMetersToPixels(curPos);
 	this->initMass();
-	
+	this->_circle->setPointCount(20);
 }
 
 MyCircle::MyCircle(sf::Vector2f& pos):
@@ -25,9 +25,9 @@ MyCircle::MyCircle(sf::Vector2f& pos):
 	_saturation(1.0f),
 	_value(0.0f)
 	
-{
+{	
 	this->_hue = SEQ_HUE;
-	SEQ_HUE++;
+	SEQ_HUE = SEQ_HUE + 1.5f;
 	_acceleration = std::make_unique<sf::Vector2f>(0.0f, 0.0f);
 	_velocity = std::make_unique<sf::Vector2f>(0.0f, 0.0f);
 	float rad = this->getRandomRad();
@@ -37,6 +37,7 @@ MyCircle::MyCircle(sf::Vector2f& pos):
 	std::shared_ptr<sf::Vector2f> curPos = std::make_shared<sf::Vector2f>(pos / Settings::getConversionFactor());
 	this->setPositionFromMetersToPixels(curPos);
 	this->initMass();
+	this->_circle->setPointCount(20);
 	//this->randomizeVelocity();
 	//std::cout << "Mouse METERS X= " << (float)this->getPositionInMetersFromPixels()->x << " Mouse METERS Y= " << (float)this->getPositionInMetersFromPixels()->y << " Mouse PIXELS X= " << (float)this->_circle->getPosition().x << " Mouse PIXELS Y= " << (float)this->_circle->getPosition().y << "\n";
 }
@@ -91,16 +92,16 @@ void MyCircle::accelerate(std::shared_ptr<sf::Vector2f> acc)
 void MyCircle::updateColor(float deltaTime)
 {
 	
-		this->_value += 1.3f * deltaTime;
+		this->_value += 1.0f * deltaTime;
 		this->_hue += 20.0f * deltaTime;
 
 	if (this->_hue >= 360.0f)
 	{
 		this->_hue -= 360.0f;
 	}
-	if (this->_value >= 1.0f)
+	if (this->_value >= 0.9f)
 	{
-		this->_value = 1.0f;
+		this->_value = 0.9f;
 	}
 	sf::Color newColor = HSVtoRGB(this->_hue, this->_saturation, this->_value);
 	_circle->setFillColor(newColor);
@@ -231,7 +232,7 @@ float MyCircle::getRandomRad()
 {
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_real_distribution<float> dis(0.05f * Settings::getConversionFactor(), 0.15f * Settings::getConversionFactor());
+	std::uniform_real_distribution<float> dis(0.08f * Settings::getConversionFactor(), 0.2f * Settings::getConversionFactor());
 	float randRad = dis(gen);
 	return randRad;
 }
@@ -240,7 +241,7 @@ void MyCircle::randomizeColor()
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::uniform_int_distribution<int> dis(0, 360);
-	this->_hue = dis(gen);
+	//this->_hue = dis(gen);
 	this->_value = 0.1f;
 	sf::Color randCol = HSVtoRGB(this->_hue, this->_saturation, this->_value);
 	_circle->setFillColor(randCol);
@@ -249,7 +250,7 @@ void MyCircle::randomizeVelocity()
 {
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_real_distribution<float> dis(-500.0f / Settings::getConversionFactor(), 500.0f / Settings::getConversionFactor());
+	std::uniform_real_distribution<float> dis(-900.0f / Settings::getConversionFactor(), 800.0f / Settings::getConversionFactor());
 	float velX = dis(gen);
 	float velY = dis(gen);
 	std::shared_ptr<sf::Vector2f> newPos = std::make_shared<sf::Vector2f>(velX , velY);

@@ -136,8 +136,8 @@ void PhysicsEngine::resolveTextCollision(std::shared_ptr<MyCircle> circle, std::
     circle->setVelocity(std::make_shared<sf::Vector2f>(reflectionVelocity));
 
     // Apply VFX to text
-    //text->quickFlash();
-    text->setColor(circle->_circle->getFillColor());
+    text->quickFlash();
+    //text->setColor(circle->_circle->getFillColor());
 }
 
 

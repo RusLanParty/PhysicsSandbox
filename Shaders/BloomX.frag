@@ -1,9 +1,9 @@
 uniform sampler2D sourceTexture;
 uniform float sigma;
 uniform float glowMultiplier;
-uniform float height;
+uniform float width;
 
-const int KERNEL_SIZE = 5;
+const int KERNEL_SIZE = 50;
 float glow = glowMultiplier / (sigma * sqrt(2.0 * 3.14159));
 
 float blurWeight(float x)
@@ -18,7 +18,7 @@ void main()
 
     for (int i = -KERNEL_SIZE; i <= KERNEL_SIZE; i++)
     {
-        texCoord.y = gl_TexCoord[0].y + (i / height);
+        texCoord.x = gl_TexCoord[0].x + (i / width);
         color += texture2D(sourceTexture, texCoord) * blurWeight(i);
     }
 

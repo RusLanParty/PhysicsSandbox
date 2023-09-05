@@ -2,10 +2,12 @@
 #include "MyText.h"
 #include "FPSCounter.h"
 static bool introComplete = false;
+bool GameManager::add = false;
 bool isMousePressed = false;
 bool bloomEnabled = true;
-float timeSinceLastSpawn = 0.01f;
-float spawnInterval = 0.01f;
+uint32_t quantity = 250;
+float timeSinceLastSpawn = 0.001f;
+float spawnInterval = 0.001f;
 uint32_t spwnCount = 0;
 int OBJCOUNT = 0;
 
@@ -17,39 +19,10 @@ GameManager::GameManager(sf::RenderWindow* window, std::shared_ptr<sf::Font> fon
     _fpsCounter(0.0f, 0.0f, 100.0f, 0.0f, *font),
     _circs(),
     _texts(),
-    maxZoom(2.0f)    
+    maxZoom(2.0f)
 {
-    // Shader
-    if (!xBlurShader.loadFromFile("src/BloomX.frag", sf::Shader::Fragment))
-    {
-        std::cout << "SHADERS: Failed to load BloomX.frag" << "\n";
-    }
-    else
-    {
-        std::cout << "SHADERS: BloomX.frag - SUCCESS" << "\n"; 
-    }
-    if (!yBlurShader.loadFromFile("src/BloomY.frag", sf::Shader::Fragment))
-    {
-        std::cout << "SHADERS: Failed to load BloomY.FRAG" << "\n";
-    }
-    else
-    {
-        std::cout << "SHADERS: BloomY.frag - SUCCESS" << "\n";
-    }
-    float sigma = 1.0f;
-    float glowMultiplier = 2.5f;
-    float width = _window->getSize().x;
-    float height = _window->getSize().y;
-
-    renderTexture.create(_window->getSize().x, _window->getSize().y);
-
-    xBlurShader.setUniform("sigma", sigma);
-    xBlurShader.setUniform("glowMultiplier", glowMultiplier);
-    xBlurShader.setUniform("width", width);
-
-    yBlurShader.setUniform("sigma", sigma);
-    yBlurShader.setUniform("glowMultiplier", glowMultiplier);
-    yBlurShader.setUniform("height", height);
+    // Init shaders
+    shaders = std::make_shared<Shaders>(window);
 
     view = _window->getDefaultView();
 
@@ -61,9 +34,19 @@ GameManager::GameManager(sf::RenderWindow* window, std::shared_ptr<sf::Font> fon
 
     _offsetX = _width * offsetXPercent;
     _offsetY = _height * offsetYPercent;
-    
-    showIntro();
-    std::cout << "Main loop started" << "\n";
+
+    renderTexture = std::make_shared<sf::RenderTexture>();
+    if (!renderTexture->create(_window->getSize().x, _window->getSize().y))
+    {
+        std::cout << "GAMEMANAGER: Failed to create RenderTexture" << "\n";
+    }
+    else
+    {
+        std::cout << "GAMEMANAGER: RenderTexture created - SUCCESS" << "\n";
+        std::cout << "CRITICAL: Ruslan.exe stopped working. Please contact your local Ruslan provider to get a replacement." << "\n";
+    }
+
+    showIntro();    
     run();    
 }
 
@@ -83,8 +66,11 @@ void GameManager::run()
     {
         _dt = _clock.restart();
         float deltaTime = _dt.asSeconds();
-        if (!introComplete) { intro(deltaTime); }
-
+        if (!introComplete) 
+        {
+            intro(deltaTime); 
+        }
+       
         handleInput(deltaTime);
         update(deltaTime);
         draw(deltaTime);
@@ -99,9 +85,22 @@ void GameManager::keyboardInput(float deltaTime, sf::Event event)
             if (event.key.code == sf::Keyboard::B)
             {
                 bloomEnabled = !bloomEnabled;
+                if (bloomEnabled)
+                {
+                    std::string state = "BLOOM ENABLED";
+                    _texts.emplace_back(std::make_shared<MyText>(state, _width / 2, _height - 15 * _offsetY, *_font, _texts, sf::Color::Cyan, true));
+                }
+                else
+                {
+                    std::string state = "BLOOM DISABLED";
+                    _texts.emplace_back(std::make_shared<MyText>(state, _width / 2, _height - 15 * _offsetY, *_font, _texts, sf::Color::Cyan, true));
+                }
             }
-            else
-            if (event.key.code == sf::Keyboard::Escape)
+            else if (event.key.code == sf::Keyboard::M)
+            {
+                    add = !add;
+            }
+            else if (event.key.code == sf::Keyboard::Escape)
             {
                 _window->close();
             }
@@ -122,7 +121,7 @@ void GameManager::keyboardInput(float deltaTime, sf::Event event)
                 {
                     circPtr->randomizeVelocity();
                     std::string state = "SHAKE";
-                    _texts.emplace_back(std::make_shared<MyText>(state, _width / 2, _height - 15 * _offsetY, *_font, _texts, sf::Color::Green, true));
+                    _texts.emplace_back(std::make_shared<MyText>(state, _width / 2, _height - 15 * _offsetY, *_font, _texts, sf::Color::Magenta, true));
                 }
             }
             else if (event.key.code == sf::Keyboard::G)
@@ -217,7 +216,7 @@ void GameManager::handleInput(float deltaTime)
     
 void GameManager::update(float deltaTime)
 {
-    spawnCircs(deltaTime);
+    spawnOnMouseClick(deltaTime);
     OBJCOUNT = _circs.size();
     if (!_circs.empty())
     {
@@ -259,18 +258,19 @@ void GameManager::update(float deltaTime)
 void GameManager::draw(float deltaTime)
 {
     _window->clear(sf::Color::Black);
+    renderTexture->clear(sf::Color::Black);
     //Physics.drawBound(_window);
 
-    renderTexture.setActive(true);
-    renderTexture.clear(sf::Color::Black);
     if (bloomEnabled) 
     {
+        renderTexture->setActive(true);
+        
         if (!_texts.empty())
         {
             for (auto& tPtr : _texts)
             {
                 MyText& t = *tPtr;
-                renderTexture.draw(*t._text);
+                renderTexture->draw(*t._text);
             }
         }
         if (!_circs.empty())
@@ -278,22 +278,10 @@ void GameManager::draw(float deltaTime)
             for (auto& cPtr : _circs)
             {
                 MyCircle& c = *cPtr;
-                renderTexture.draw(*c._circle);
+                renderTexture->draw(*c._circle);
             }
-        }
-
-        // Apply shader
-        sf::Texture sourceTexture(renderTexture.getTexture());
-        xBlurShader.setUniform("sourceTexture", sourceTexture);
-        yBlurShader.setUniform("sourceTexture", sourceTexture);
-        sf::Sprite sprite(renderTexture.getTexture());
-        renderTexture.draw(sprite, &xBlurShader);
-        renderTexture.draw(sprite, &yBlurShader);
-        //renderTexture.display();
-        sf::Sprite result(renderTexture.getTexture());
-        _window->draw(result);
-        renderTexture.clear();
-        renderTexture.setActive(false);
+        }    
+        shaders->applyBloom(renderTexture);
     }
     else 
     {
@@ -325,8 +313,9 @@ void GameManager::draw(float deltaTime)
 
 void GameManager::showIntro() 
 {
+    introComplete = false;
     const std::string& intr = "LEFT CLICK - SPAWN CIRCLES";
-    const std::string& intr1 = "RIGHT CLICK - DESPAWN CIRCLES";
+    const std::string& intr1 = "B - TOGGLE BLOOM";
     const std::string& intr2 = "G - TOGGLE GRAVITY";
     const std::string& intr3 = "X - CLEAR WINDOW";
     const std::string& intr4 = "PHYSICS SANDBOX BY RUSLAN LIBIN (https://github.com/RusLanParty)";
@@ -351,7 +340,7 @@ bool GameManager::inBoundY()
     }
     return true;
 }
-void GameManager::spawnCircs(float deltaTime)
+void GameManager::spawnOnMouseClick(float deltaTime)
 {
     if (isMousePressed)
     {
@@ -368,9 +357,6 @@ void GameManager::spawnCircs(float deltaTime)
 }
 void GameManager::intro(float deltaTime)
 {
-        // How many circles to spawn
-        uint32_t quantity = 300;
-
         float offsetY = _height * 0.5f;
         float offsetX = _width / quantity;
 
@@ -397,7 +383,7 @@ void GameManager::intro(float deltaTime)
                     top.x = offsetX * spwnCount * Settings::getConversionFactor();
                 }
 
-                top.y = -offsetY * 100;
+                top.y = -offsetY * 300;
                 _circs.emplace_back(std::make_shared<MyCircle>(top));
                 timeSinceLastSpawn = 0.0f;
                 spwnCount++;
@@ -410,8 +396,8 @@ void GameManager::intro(float deltaTime)
                    {    
                    tPtr->fadeOut();   
                    }
-                   spawnInterval = 0.17f;
-                   timeSinceLastSpawn = 0.17f;
+                   spawnInterval = 0.1f;
+                   timeSinceLastSpawn = 0.1f;
                    Physics.toggleGravity();
 
                    introComplete = true;

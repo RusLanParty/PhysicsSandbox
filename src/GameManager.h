@@ -3,6 +3,7 @@
 #include "MyText.h"
 #include "FPSCounter.h"
 #include "Settings.h"
+#include "Shaders.h"
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <memory>
@@ -13,10 +14,10 @@ public:
 	GameManager(sf::RenderWindow* window, std::shared_ptr<sf::Font> font);
 	static bool isIntroFinished();
 	static int getObjectCount();
+	static bool add;
 private:
-	sf::RenderTexture renderTexture;
-	sf::Shader xBlurShader;
-	sf::Shader yBlurShader;
+	std::shared_ptr<Shaders> shaders;
+	std::shared_ptr<sf::RenderTexture> renderTexture;
 	sf::RenderWindow* _window;
 	sf::View view;
 	float maxZoom;	
@@ -41,6 +42,5 @@ private:
 	void disposeTrash();
 	void showIntro();
 	bool inBoundY();
-	void spawnCircs(float deltaTime);
-	
+	void spawnOnMouseClick(float deltaTime);
 };
