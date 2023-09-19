@@ -311,7 +311,7 @@ bool MyText::isIntersect(std::shared_ptr<MyCircle> circle) const {
 	sf::Vector2f textPosition = _text->getPosition() / Settings::getConversionFactor();
 	sf::Vector2f textSize = sf::Vector2f(_text->getGlobalBounds().width / Settings::getConversionFactor(), _text->getGlobalBounds().height / Settings::getConversionFactor());
 
-	sf::Vector2f circlePosition = *circle->getPositionInMetersFromPixels();
+	sf::Vector2f circlePosition = circle->getPositionInMetersFromPixels();
 	float circleRadius = circle->getRadiusInMetersFromPixels();
 
 	// Calculate the corners of the text's bounding box

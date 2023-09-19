@@ -333,7 +333,7 @@ bool GameManager::inBoundY()
 {
     for (auto& circPtr : _circs)
     {
-        if (circPtr->getPositionInMetersFromPixels()->y < circPtr->getRadiusInMetersFromPixels())
+        if (circPtr->getPositionInMetersFromPixels().y < circPtr->getRadiusInMetersFromPixels())
         {
             return false;
         }

@@ -11,19 +11,19 @@ public:
 	~MyCircle();
 	std::unique_ptr<sf::CircleShape> _circle;
 	float getMass() const;
-	void setVelocity(std::shared_ptr<sf::Vector2f> vel);
+	void setVelocity(sf::Vector2f vel);
 	void invertXVelocity();
 	void invertYVelocity();
 	void applyImpulse(const sf::Vector2f& impulse);
 	static float calculateRestitution(float massRatio);
-	std::shared_ptr<sf::Vector2f> getVelocity() const;
-	std::shared_ptr<sf::Vector2f> getAcceleration() const;
-	std::shared_ptr<sf::Vector2f> getPositionInMetersFromPixels() const;
-	void setPositionFromMetersToPixels(std::shared_ptr<sf::Vector2f> pos);
+	sf::Vector2f getVelocity() const;
+	sf::Vector2f getAcceleration() const;
+	sf::Vector2f getPositionInMetersFromPixels() const;
+	void setPositionFromMetersToPixels(sf::Vector2f pos);
 	void setPositionFromMetersToPixels(float x, float y);
 	const float getRadiusInMetersFromPixels() const;
 	void accelerate(float xs, float ys);
-	void accelerate(std::shared_ptr<sf::Vector2f> acc);
+	void accelerate(sf::Vector2f acc);
 	void resetAcceleration();	
 	void updateColor(float deltaTime);
 	void randomizeColor();
@@ -33,8 +33,8 @@ public:
 	float getMass();
 	void move(sf::Vector2f vec);
 private:	
-	std::shared_ptr<sf::Vector2f> _acceleration;	
-	std::shared_ptr<sf::Vector2f> _velocity;
+	sf::Vector2f _acceleration;	
+	sf::Vector2f _velocity;
 	float _hue;
 	float _saturation;
 	float _value;

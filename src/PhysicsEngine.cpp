@@ -12,7 +12,7 @@
 #endif
 
 
-std::shared_ptr<sf::Vector2f> PhysicsEngine::_gravityValue = std::make_unique<sf::Vector2f>(0.0f, 9.81f);
+sf::Vector2f PhysicsEngine::_gravityValue(0.0f, 9.81f);
 bool PhysicsEngine::_gravity = true;
 
 PhysicsEngine::PhysicsEngine()
@@ -57,7 +57,7 @@ void PhysicsEngine::applyPhysics(std::shared_ptr<MyCircle> circle, float deltaTi
 }
 void PhysicsEngine::updatePosition(std::shared_ptr<MyCircle> circle, float deltaTime)
 {
-    std::shared_ptr<sf::Vector2f> newPos = std::make_shared<sf::Vector2f>(*circle->getPositionInMetersFromPixels() + (*circle->getVelocity()));
+    sf::Vector2f newPos(circle->getPositionInMetersFromPixels() + (circle->getVelocity()));
     circle->setPositionFromMetersToPixels(newPos);
 }
 void PhysicsEngine::drawBound(sf::RenderWindow* window)
@@ -66,13 +66,13 @@ void PhysicsEngine::drawBound(sf::RenderWindow* window)
 }
 void PhysicsEngine::updateVelocity(std::shared_ptr<MyCircle> circle, float deltaTime)
 {
-    std::shared_ptr<sf::Vector2f> newVel =std::make_shared<sf::Vector2f>(*circle->getVelocity() + (*circle->getAcceleration() * deltaTime));
+    sf::Vector2f newVel(circle->getVelocity() + (circle->getAcceleration() * deltaTime));
     circle->setVelocity(newVel);
     circle->resetAcceleration();
 }
 void PhysicsEngine::resolveCollision(std::shared_ptr<MyCircle> circle1, std::shared_ptr<MyCircle> circle2) 
 {
-    sf::Vector2f delta = *circle2->getPositionInMetersFromPixels() - *circle1->getPositionInMetersFromPixels();
+    sf::Vector2f delta = circle2->getPositionInMetersFromPixels() - circle1->getPositionInMetersFromPixels();
     float distance = length(delta);
 
     sf::Vector2f normal = normalize(delta);
@@ -84,7 +84,7 @@ void PhysicsEngine::resolveCollision(std::shared_ptr<MyCircle> circle1, std::sha
     float restitution = MyCircle::calculateRestitution(massRatio);
 
     // Calculate relative velocity
-    sf::Vector2f relativeVelocity = *circle2->getVelocity() - *circle1->getVelocity();
+    sf::Vector2f relativeVelocity = circle2->getVelocity() - circle1->getVelocity();
     float relativeSpeed = dot(relativeVelocity, normal);
 
     // Calculate impulse magnitude
@@ -109,7 +109,7 @@ void PhysicsEngine::resolveCollision(std::shared_ptr<MyCircle> circle1, std::sha
 
 void PhysicsEngine::resolveTextCollision(std::shared_ptr<MyCircle> circle, std::shared_ptr<MyText> text)
 {
-    sf::Vector2f circlePosition = *circle->getPositionInMetersFromPixels();
+    sf::Vector2f circlePosition = circle->getPositionInMetersFromPixels();
     float circleRadius = circle->getRadiusInMetersFromPixels();
 
     sf::Vector2f textPosition = text->_text->getPosition() / Settings::getConversionFactor();
@@ -129,11 +129,11 @@ void PhysicsEngine::resolveTextCollision(std::shared_ptr<MyCircle> circle, std::
     collisionNormal /= collisionNormalLength;
 
     // Calculate the reflection of the circle's velocity
-    sf::Vector2f circleVelocity = *circle->getVelocity();
+    sf::Vector2f circleVelocity = circle->getVelocity();
     sf::Vector2f reflectionVelocity = circleVelocity - 2.1f * dot(circleVelocity, collisionNormal) * collisionNormal;
 
     // Apply the reflected velocity to the circle
-    circle->setVelocity(std::make_shared<sf::Vector2f>(reflectionVelocity));
+    circle->setVelocity(reflectionVelocity);
 
     // Apply VFX to text
     text->quickFlash();
@@ -153,22 +153,22 @@ bool PhysicsEngine::getGravityState()
 
 void PhysicsEngine::applyGravity(std::shared_ptr<MyCircle> circle, float subDt)
 {
-    std::shared_ptr<sf::Vector2f> scaledGrav = std::make_shared<sf::Vector2f>(*_gravityValue * subDt);
+    sf::Vector2f scaledGrav(_gravityValue * subDt);
     circle->accelerate(scaledGrav);
 }
 void PhysicsEngine::checkBounds(std::shared_ptr<MyCircle> circle, float timeStep)
 {
     // X bounds
     // Left
-    if (circle->getPositionInMetersFromPixels()->x < circle->getRadiusInMetersFromPixels()) 
+    if (circle->getPositionInMetersFromPixels().x < circle->getRadiusInMetersFromPixels()) 
     {
-        circle->setPositionFromMetersToPixels(circle->getRadiusInMetersFromPixels(), circle->getPositionInMetersFromPixels()->y);
+        circle->setPositionFromMetersToPixels(circle->getRadiusInMetersFromPixels(), circle->getPositionInMetersFromPixels().y);
         circle->invertXVelocity();
     }
     // Right
-    else if (circle->getPositionInMetersFromPixels()->x > _width - circle->getRadiusInMetersFromPixels())
+    else if (circle->getPositionInMetersFromPixels().x > _width - circle->getRadiusInMetersFromPixels())
     {
-        circle->setPositionFromMetersToPixels(_width - circle->getRadiusInMetersFromPixels(), circle->getPositionInMetersFromPixels()->y);
+        circle->setPositionFromMetersToPixels(_width - circle->getRadiusInMetersFromPixels(), circle->getPositionInMetersFromPixels().y);
         circle->invertXVelocity();
     }
 
@@ -176,16 +176,16 @@ void PhysicsEngine::checkBounds(std::shared_ptr<MyCircle> circle, float timeStep
     // Top (disabled on intro)
     if (GameManager::isIntroFinished())
     {
-        if (circle->getPositionInMetersFromPixels()->y < circle->getRadiusInMetersFromPixels())
+        if (circle->getPositionInMetersFromPixels().y < circle->getRadiusInMetersFromPixels())
         {
-            circle->setPositionFromMetersToPixels(circle->getPositionInMetersFromPixels()->x, circle->getRadiusInMetersFromPixels() + 0.01f);
+            circle->setPositionFromMetersToPixels(circle->getPositionInMetersFromPixels().x, circle->getRadiusInMetersFromPixels() + 0.01f);
             circle->invertYVelocity();
         }
     }
     // Bottom
-    if (circle->getPositionInMetersFromPixels()->y > _height - circle->getRadiusInMetersFromPixels())
+    if (circle->getPositionInMetersFromPixels().y > _height - circle->getRadiusInMetersFromPixels())
     {
-        circle->setPositionFromMetersToPixels(circle->getPositionInMetersFromPixels()->x, _height - circle->getRadiusInMetersFromPixels());
+        circle->setPositionFromMetersToPixels(circle->getPositionInMetersFromPixels().x, _height - circle->getRadiusInMetersFromPixels());
         circle->invertYVelocity();
     }
 }

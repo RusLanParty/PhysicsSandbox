@@ -17,7 +17,7 @@ public:
 	float _height;
 private:
 	//std::unique_ptr<sf::CircleShape> _bound;
-	static std::shared_ptr<sf::Vector2f> _gravityValue;
+	static sf::Vector2f _gravityValue;
 	static bool _gravity;
 	void applyGravity(std::shared_ptr<MyCircle> circle, float subDt);
 	float dot(const sf::Vector2f& vec1, const sf::Vector2f& vec2);
