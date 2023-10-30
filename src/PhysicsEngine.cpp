@@ -31,7 +31,7 @@ PhysicsEngine::PhysicsEngine()
 
 void PhysicsEngine::applyPhysics(std::shared_ptr<MyCircle> circle, float deltaTime)
 {
-    const uint32_t sub_step = 8;
+    const uint32_t sub_step = 16;
     float sub_dt = deltaTime / (float)sub_step;
 
     // Updating (sub_step) times between each frame to increase stability

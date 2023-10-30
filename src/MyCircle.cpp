@@ -259,8 +259,8 @@ void MyCircle::applyImpulse(const sf::Vector2f & impulse) {
 
 float MyCircle::calculateRestitution(float massRatio)
 {
-	float minRestitution = 0.2f;
-	float maxRestitution = 0.7f;
+	float minRestitution = 0.01f;
+	float maxRestitution = 0.4f;
 
 	if (massRatio < 1.0f) 
 	{

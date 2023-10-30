@@ -5,9 +5,9 @@ static bool introComplete = false;
 bool GameManager::add = false;
 bool isMousePressed = false;
 bool bloomEnabled = true;
-uint32_t quantity = 250;
-float timeSinceLastSpawn = 0.001f;
-float spawnInterval = 0.001f;
+uint32_t quantity = 10;
+float timeSinceLastSpawn = 0.05f;
+float spawnInterval = 0.05f;
 uint32_t spwnCount = 0;
 int OBJCOUNT = 0;
 
@@ -318,11 +318,11 @@ void GameManager::showIntro()
     const std::string& intr1 = "B - TOGGLE BLOOM";
     const std::string& intr2 = "G - TOGGLE GRAVITY";
     const std::string& intr3 = "X - CLEAR WINDOW";
-    const std::string& intr4 = "PHYSICS SANDBOX BY RUSLAN LIBIN (https://github.com/RusLanParty)";
+    //const std::string& intr4 = "PHYSICS SANDBOX(https://github.com/RusLanParty)";
     
 
     // Intro text
-    _texts.emplace_back(std::make_shared<MyText>(intr4, _width / 2, _height - 10 * _offsetY, *_font, _texts, sf::Color::White));
+    //_texts.emplace_back(std::make_shared<MyText>(intr4, _width / 2, _height - 10 * _offsetY, *_font, _texts, sf::Color::White));
     _texts.emplace_back(std::make_shared<MyText>(intr, _width / 2, _height - 4 * _offsetY, *_font, _texts));
     _texts.emplace_back(std::make_shared<MyText>(intr1, _width / 2, _height - 3 * _offsetY, *_font, _texts));
     _texts.emplace_back(std::make_shared<MyText>(intr2, _width / 2, _height - 2 * _offsetY, *_font, _texts));
@@ -371,19 +371,19 @@ void GameManager::intro(float deltaTime)
                 // For the first circle, spawn a bit further from the left edge
                 if (spwnCount == 0)
                 {
-                    top.x = offsetX * spwnCount + offsetX * Settings::getConversionFactor(); 
+                    top.x = offsetX * spwnCount + 1 * Settings::getConversionFactor(); 
                 }
                 // For the last circle, spawn a bit further from the right edge
                 else if (spwnCount == quantity - 1)
                 {
-                    top.x = offsetX * spwnCount - offsetX * 0.55f * Settings::getConversionFactor(); 
+                    top.x = offsetX * spwnCount - 1 * Settings::getConversionFactor(); 
                 }
                 else
                 {
                     top.x = offsetX * spwnCount * Settings::getConversionFactor();
                 }
 
-                top.y = -offsetY * 300;
+                top.y = -offsetY * 30;
                 _circs.emplace_back(std::make_shared<MyCircle>(top));
                 timeSinceLastSpawn = 0.0f;
                 spwnCount++;
@@ -396,8 +396,8 @@ void GameManager::intro(float deltaTime)
                    {    
                    tPtr->fadeOut();   
                    }
-                   spawnInterval = 0.1f;
-                   timeSinceLastSpawn = 0.1f;
+                   spawnInterval = 0.05f;
+                   timeSinceLastSpawn = 0.05f;
                    Physics.toggleGravity();
 
                    introComplete = true;

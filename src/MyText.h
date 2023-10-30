@@ -23,9 +23,9 @@ public:
 	
 private:
 	static bool BLOCKSPAWN;
-	float static FADEINSPEED;
-	float static FADEOUTSPEED;
-	int static COUNT;
+	static float FADEINSPEED;
+	static float FADEOUTSPEED;
+	static int COUNT;
 	static float SEQ_HUE;
 	static float getRandomHue();
 	bool _instantFade;
