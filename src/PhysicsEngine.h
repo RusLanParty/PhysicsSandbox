@@ -13,6 +13,7 @@ public:
 	void resolveCollision(std::shared_ptr<MyCircle> circle, std::shared_ptr<MyCircle> circle2);
 	void resolveTextCollision(std::shared_ptr<MyCircle> circle, std::shared_ptr<MyText> text);
 	void drawBound(sf::RenderWindow* window);
+	void setDimensions(float conversionFactor);
 	float _width;
 	float _height;
 private:

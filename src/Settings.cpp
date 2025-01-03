@@ -9,6 +9,7 @@ float Settings::getConversionFactor()
 void Settings::setConversionFactor(float convFact)
 {
     _conversionFactor = convFact;
+    
 }
 
 /*uint32_t Settings::getSubSteps()

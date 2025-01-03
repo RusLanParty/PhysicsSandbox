@@ -9,7 +9,7 @@ MyCircle::MyCircle():
 	_velocity()
 {	
 	this->_hue = SEQ_HUE;
-	SEQ_HUE = SEQ_HUE + 1.5f;
+	SEQ_HUE = SEQ_HUE + 0.01f;
 	float rad = this->getRandomRad();
 	_circle = std::make_unique<sf::CircleShape>(rad);
 	_circle->setOrigin(_circle->getRadius(), _circle->getRadius());
@@ -28,7 +28,7 @@ MyCircle::MyCircle(sf::Vector2f& pos):
 	_velocity()
 {	
 	this->_hue = SEQ_HUE;
-	SEQ_HUE = SEQ_HUE + 1.5f;
+	SEQ_HUE = SEQ_HUE + 0.01f;
 	float rad = this->getRandomRad();
 	_circle = std::make_unique<sf::CircleShape>(rad);
 	_circle->setOrigin(_circle->getRadius(), _circle->getRadius());
@@ -228,7 +228,7 @@ float MyCircle::getRandomRad()
 {
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_real_distribution<float> dis(0.08f * Settings::getConversionFactor(), 0.2f * Settings::getConversionFactor());
+	std::uniform_real_distribution<float> dis(0.3f * Settings::getConversionFactor(), 0.7f * Settings::getConversionFactor());
 	float randRad = dis(gen);
 	return randRad;
 }
@@ -238,7 +238,7 @@ void MyCircle::randomizeColor()
 	std::mt19937 gen(rd());
 	std::uniform_int_distribution<int> dis(0, 360);
 	//this->_hue = dis(gen);
-	this->_value = 0.1f;
+	this->_value = 0.03f;
 	sf::Color randCol = HSVtoRGB(this->_hue, this->_saturation, this->_value);
 	_circle->setFillColor(randCol);
 }
@@ -246,7 +246,7 @@ void MyCircle::randomizeVelocity()
 {
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_real_distribution<float> dis(-900.0f / Settings::getConversionFactor(), 800.0f / Settings::getConversionFactor());
+	std::uniform_real_distribution<float> dis(-1000.0f / Settings::getConversionFactor(), 1000.0f / Settings::getConversionFactor());
 	float velX = dis(gen);
 	float velY = dis(gen);
 	sf::Vector2f newPos(velX , velY);
@@ -259,8 +259,8 @@ void MyCircle::applyImpulse(const sf::Vector2f & impulse) {
 
 float MyCircle::calculateRestitution(float massRatio)
 {
-	float minRestitution = 0.01f;
-	float maxRestitution = 0.4f;
+	float minRestitution = 0.001f;
+	float maxRestitution = 1.0f;
 
 	if (massRatio < 1.0f) 
 	{

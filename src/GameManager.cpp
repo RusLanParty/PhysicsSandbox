@@ -5,9 +5,9 @@ static bool introComplete = false;
 bool GameManager::add = false;
 bool isMousePressed = false;
 bool bloomEnabled = true;
-uint32_t quantity = 10;
+uint32_t quantity = 1000;
 float timeSinceLastSpawn = 0.05f;
-float spawnInterval = 0.05f;
+float spawnInterval = 0.01f;
 uint32_t spwnCount = 0;
 int OBJCOUNT = 0;
 
@@ -160,22 +160,28 @@ void GameManager::mouseInput(float deltaTime, sf::Event event)
     if (event.type == event.MouseWheelScrolled) 
     {
         sf::Vector2f mousePosF((float)sf::Mouse::getPosition().x, (float)sf::Mouse::getPosition().y);
-        view.setCenter(mousePosF);
+        //view.setCenter(mousePosF);
 
         // Zooming in/out
         if (event.mouseWheelScroll.delta > 0)
         {
-            if (view.getSize().x > _window->getSize().x / maxZoom) {
-                view.zoom(0.9f); 
-            }
+            float currentFactor = Settings::getConversionFactor();
+            currentFactor++;
+            Settings::setConversionFactor(currentFactor);
+            //if (view.getSize().x > _window->getSize().x / maxZoom) {
+              //  view.zoom(0.9f); 
+            //}
         }
         else if (event.mouseWheelScroll.delta < 0)
         {
-            if (view.getSize().x < _window->getSize().x)
-            {
+            float currentFactor = Settings::getConversionFactor();
+            currentFactor--;
+            Settings::setConversionFactor(currentFactor);
+            //if (view.getSize().x < _window->getSize().x)
+            //{
                 
-                view.zoom(1.1f); 
-            }
+              //  view.zoom(1.1f); 
+            //}
         }   
     }
     if (event.type == event.MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
@@ -357,7 +363,7 @@ void GameManager::spawnOnMouseClick(float deltaTime)
 }
 void GameManager::intro(float deltaTime)
 {
-        float offsetY = _height * 0.5f;
+        float offsetY = _height * 0.1f;
         float offsetX = _width / quantity;
 
         timeSinceLastSpawn += deltaTime;

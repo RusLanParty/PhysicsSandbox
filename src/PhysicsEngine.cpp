@@ -17,11 +17,8 @@ bool PhysicsEngine::_gravity = true;
 
 PhysicsEngine::PhysicsEngine()
 
-{
-    Settings::setConversionFactor(200.0f);
-    sf::VideoMode windowRes = sf::VideoMode::getDesktopMode();
-    _width = static_cast<float>(windowRes.width) / Settings::getConversionFactor();
-    _height = static_cast<float>(windowRes.height) / Settings::getConversionFactor();
+{    
+    this->setDimensions(10.0f);
     //_bound = std::make_unique<sf::CircleShape>(5.0f * Settings::getConversionFactor());
    // _bound->setFillColor(sf::Color::Black);
     //_bound->setOrigin(_bound->getRadius(), _bound->getRadius());
@@ -31,7 +28,7 @@ PhysicsEngine::PhysicsEngine()
 
 void PhysicsEngine::applyPhysics(std::shared_ptr<MyCircle> circle, float deltaTime)
 {
-    const uint32_t sub_step = 16;
+    const uint32_t sub_step = 2;
     float sub_dt = deltaTime / (float)sub_step;
 
     // Updating (sub_step) times between each frame to increase stability
@@ -57,12 +54,19 @@ void PhysicsEngine::applyPhysics(std::shared_ptr<MyCircle> circle, float deltaTi
 }
 void PhysicsEngine::updatePosition(std::shared_ptr<MyCircle> circle, float deltaTime)
 {
-    sf::Vector2f newPos(circle->getPositionInMetersFromPixels() + (circle->getVelocity()));
+    sf::Vector2f newPos(circle->getPositionInMetersFromPixels() + (circle->getVelocity() / (deltaTime * 60)));
     circle->setPositionFromMetersToPixels(newPos);
 }
 void PhysicsEngine::drawBound(sf::RenderWindow* window)
 {
     //window->draw(*_bound);
+}
+void PhysicsEngine::setDimensions(float conversionFactor)
+{
+    Settings::setConversionFactor(conversionFactor);
+    sf::VideoMode windowRes = sf::VideoMode::getDesktopMode();
+    this->_width = static_cast<float>(windowRes.width) / Settings::getConversionFactor();
+    this->_height = static_cast<float>(windowRes.height) / Settings::getConversionFactor();
 }
 void PhysicsEngine::updateVelocity(std::shared_ptr<MyCircle> circle, float deltaTime)
 {
